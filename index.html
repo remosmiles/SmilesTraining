@@ -113,10 +113,34 @@
         let timerInterval = null;
 
         const plans = {
-            "OK1": [{ id: "ok1_1", name: "Bankdrücken", target: "4 Sätze x 8–10 Wdh." }, { id: "ok1_2", name: "Klimmzüge (Zusatzgewicht)", target: "3 Sätze x 8–10 Wdh." }, { id: "ok1_3", name: "Dips (Zusatzgewicht)", target: "3 Sätze x 8–12 Wdh." }, { id: "ok1_4", name: "Vorgebeugtes Rudern", target: "3 Sätze x 8–12 Wdh." }, { id: "ok1_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." }],
-            "UK1": [{ id: "uk1_1", name: "Tiefe Kniebeugen", target: "4 Sätze x 8–10 Wdh." }, { id: "uk1_2", name: "Rumänisches Kreuzheben", target: "3 Sätze x 8–10 Wdh." }, { id: "uk1_3", name: "Beinstrecker", target: "3 Sätze x 10–12 Wdh." }, { id: "uk1_4", name: "Wadenheben stehend", target: "4 Sätze x 12–15 Wdh." }],
-            "OK2": [{ id: "ok2_1", name: "Klimmzüge (Zusatzgewicht)", target: "4 Sätze x 8–10 Wdh." }, { id: "ok2_2", name: "Schulterdrücken", target: "3 Sätze x 8–10 Wdh." }, { id: "ok2_3", name: "Bankdrücken o. Butterfly", target: "3 Sätze x 8–12 Wdh." }, { id: "ok2_4", name: "Dips (Körpergewicht)", target: "3 Sätze x AMRAP" }, { id: "ok2_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." }],
-            "UK2": [{ id: "uk2_1", name: "Rumänisches Kreuzheben", target: "4 Sätze x 8–10 Wdh." }, { id: "uk2_2", name: "Beinbeuger", target: "3 Sätze x 10–12 Wdh." }, { id: "uk2_3", name: "Ausfallschritte o. Kniebeugen", target: "3 Sätze x 10–12 Wdh." }, { id: "uk2_4", name: "Planks (Zusatzgewicht)", target: "3 Sätze x 45–60 Sek." }]
+            "OK1": [
+                { id: "ok1_1", name: "Bankdrücken", target: "4 Sätze x 8–10 Wdh." }, 
+                { id: "ok1_2", name: "Klimmzüge (Zusatzgewicht)", target: "3 Sätze x 8–10 Wdh." }, 
+                { id: "ok1_3", name: "Dips (Zusatzgewicht)", target: "3 Sätze x 8–12 Wdh." }, 
+                { id: "ok1_4", name: "Vorgebeugtes Rudern", target: "3 Sätze x 8–12 Wdh." }, 
+                { id: "ok1_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." },
+                { id: "ok1_6", name: "Langhantel-Curls (Bizeps)", target: "3 Sätze x 10–12 Wdh." }
+            ],
+            "UK1": [
+                { id: "uk1_1", name: "Tiefe Kniebeugen", target: "4 Sätze x 8–10 Wdh." }, 
+                { id: "uk1_2", name: "Rumänisches Kreuzheben", target: "3 Sätze x 8–10 Wdh." }, 
+                { id: "uk1_3", name: "Beinstrecker", target: "3 Sätze x 10–12 Wdh." }, 
+                { id: "uk1_4", name: "Wadenheben stehend", target: "4 Sätze x 12–15 Wdh." }
+            ],
+            "OK2": [
+                { id: "ok2_1", name: "Klimmzüge (Zusatzgewicht)", target: "4 Sätze x 8–10 Wdh." }, 
+                { id: "ok2_2", name: "Schulterdrücken", target: "3 Sätze x 8–10 Wdh." }, 
+                { id: "ok2_3", name: "Bankdrücken o. Butterfly", target: "3 Sätze x 8–12 Wdh." }, 
+                { id: "ok2_4", name: "Dips (Körpergewicht)", target: "3 Sätze x AMRAP" }, 
+                { id: "ok2_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." },
+                { id: "ok2_6", name: "Trizeps-Drücken über Kopf (KB)", target: "3 Sätze x 10–12 Wdh." }
+            ],
+            "UK2": [
+                { id: "uk2_1", name: "Rumänisches Kreuzheben", target: "4 Sätze x 8–10 Wdh." }, 
+                { id: "uk2_2", name: "Beinbeuger", target: "3 Sätze x 10–12 Wdh." }, 
+                { id: "uk2_3", name: "Ausfallschritte o. Kniebeugen", target: "3 Sätze x 10–12 Wdh." }, 
+                { id: "uk2_4", name: "Planks (Zusatzgewicht)", target: "3 Sätze x 45–60 Sek." }
+            ]
         };
 
         const btnWorkout = document.getElementById('btn-workout');
@@ -209,7 +233,6 @@
                     lastSession.sets.forEach(s => { if(s.w > bestW || (s.w === bestW && s.r > bestR)) { bestW = s.w; bestR = s.r; }});
                     historyText = `Letztes Mal: ${bestW} kg x ${bestR} Wdh`;
                     
-                    // Finde letzte Notiz
                     for(let i = sessionArr.length - 1; i >= 0; i--) {
                         if(sessionArr[i].note) { latestNote = sessionArr[i].note; break; }
                     }
@@ -254,7 +277,7 @@
                 for(let i=1; i<=sets; i++) {
                     const wVal = parseFloat(document.getElementById(`${ex.id}_w_${i}`).value) || 0;
                     const rVal = parseInt(document.getElementById(`${ex.id}_r_${i}`).value) || 0;
-                    const rirVal = document.getElementById(`${ex.id}_rir_${i}`).value; // Kann leer sein
+                    const rirVal = document.getElementById(`${ex.id}_rir_${i}`).value;
                     
                     if(wVal > 0 || rVal > 0) {
                         sessionSets.push({ set: i, w: wVal, r: rVal, rir: rirVal });
@@ -263,7 +286,6 @@
                 
                 if(sessionSets.length > 0 || noteVal !== "") {
                     if(!historyObj[ex.id]) historyObj[ex.id] = [];
-                    // Wir speichern das Training, falls Sätze da sind. Falls nur Notiz geändert, speichern wir trotzdem die Session ab.
                     historyObj[ex.id].push({ date: dateString, sets: sessionSets, note: noteVal });
                 }
             });
@@ -273,7 +295,7 @@
                 const toast = document.getElementById("toast");
                 toast.className = "show";
                 setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-                renderWorkout(); // Formular resetten
+                renderWorkout(); 
             } catch(e) {
                 alert("Fehler beim Speichern: " + e.message);
             } finally {
@@ -310,7 +332,7 @@
             const dataPoints = [];
 
             data.forEach(d => {
-                if(d.sets.length === 0) return; // Überspringe Sessions nur mit Notizen
+                if(d.sets.length === 0) return;
                 labels.push(d.date.split(' ')[0]);
                 
                 if(metric === 'max') {
