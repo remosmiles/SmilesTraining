@@ -2,388 +2,556 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Homegym Tracker - High Performance</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remo Tresch | Präventionsdienste</title>
     <style>
-        :root { --bg-color: #121212; --card-bg: #1e1e1e; --primary: #bb86fc; --text-main: #ffffff; --text-muted: #a0a0a0; --success: #03dac6; --warning: #cf6679; }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 90px; }
-        h1, h2 { text-align: center; }
-        .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #333; color: white; }
-        .btn.active { background-color: var(--primary); color: #000; }
+        /* Premium CSS Variablen - Elegant, Seriös, Modern */
+        :root {
+            --bg-base: #020617; 
+            --bg-surface: rgba(30, 41, 59, 0.6); 
+            --uri-yellow: #eab308; 
+            --uri-yellow-glow: rgba(234, 179, 8, 0.2);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --alert-red: #e11d48;
+            --font-main: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.7;
+            scroll-behavior: smooth;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(30, 58, 138, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(234, 179, 8, 0.05), transparent 25%);
+            background-attachment: fixed;
+        }
+
+        h1, h2, h3, h4 { font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; }
+        h2 { font-size: 2.5rem; margin-bottom: 3rem; text-align: center; color: var(--text-primary); }
+        h2 span { color: var(--uri-yellow); }
+
+        /* --- Header / Hero Section --- */
+        header {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .logo-container img {
+            width: 140px;
+            height: auto;
+            margin-bottom: 2.5rem;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+            transition: transform 0.5s ease;
+        }
+        .logo-container img:hover { transform: scale(1.05); }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+        .hero-title span { color: var(--uri-yellow); }
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            max-width: 700px;
+            font-weight: 400;
+        }
+        .hero-quote {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 3.5rem;
+            font-style: italic;
+            opacity: 0.8;
+            max-width: 600px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            color: var(--bg-base);
+            background-color: var(--uri-yellow);
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .btn:hover {
+            background-color: #facc15;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px var(--uri-yellow-glow);
+        }
+
+        section { padding: 8rem 2rem; max-width: 1200px; margin: 0 auto; }
+
+        /* --- KBM Redesign Section --- */
+        .kbm-redesign-section {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 4rem 3rem;
+            border: 1px solid var(--border-light);
+            margin-bottom: 4rem;
+        }
+        .kbm-intro { text-align: center; color: var(--text-primary); max-width: 900px; margin: 0 auto 4rem auto; font-size: 1.2rem; font-weight: 300; }
+        .kbm-intro strong { color: var(--uri-yellow); font-weight: 600; }
         
-        select { width: 100%; padding: 15px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--primary); border-radius: 8px; font-size: 16px; margin-bottom: 15px; appearance: none; }
+        .kbm-steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 4rem; }
+        .step-card { background: rgba(0, 0, 0, 0.3); border-top: 3px solid var(--uri-yellow); padding: 2.5rem 2rem; border-radius: 12px; text-align: center; transition: transform 0.3s ease; }
+        .step-card:hover { transform: translateY(-5px); background: rgba(0, 0, 0, 0.5); }
+        .step-card .step-number { font-size: 3rem; font-weight: 800; color: rgba(234, 179, 8, 0.2); margin-bottom: -1.5rem; display: block; }
+        .step-card h4 { font-size: 1.4rem; margin-bottom: 1rem; color: #fff; position: relative; z-index: 2; }
+        .step-card p { color: var(--text-secondary); font-size: 0.95rem; position: relative; z-index: 2; }
+
+        .info-split { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 4rem; border-top: 1px solid var(--border-light); padding-top: 4rem; }
+        .info-block h4 { font-size: 1.5rem; color: #fff; margin-bottom: 1.5rem; }
+        .info-block p { color: var(--text-secondary); margin-bottom: 1rem; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+        .tag { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* --- Visionen / Konzepte Cards (ausgeblendet über style="display:none;" im HTML) --- */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; }
+        .card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(12px);
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--uri-yellow); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+        }
+        .card:hover::before { transform: scaleX(1); }
+        .card:hover { transform: translateY(-8px); border-color: rgba(234, 179, 8, 0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .card h3 { font-size: 1.5rem; margin-bottom: 1.2rem; color: #ffffff; }
+        .card p { color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.05rem; flex-grow: 1; }
+        .card-focus { display: inline-block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--uri-yellow); font-weight: 600; margin-bottom: 1.5rem; }
         
-        .exercise-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .exercise-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: var(--primary); }
-        .exercise-target { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; }
-        .last-workout { font-size: 13px; color: var(--success); margin-bottom: 10px; font-style: italic; }
+        .btn-outline {
+            background: transparent;
+            color: var(--uri-yellow);
+            border: 1px solid var(--uri-yellow);
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .btn-outline:hover { background: rgba(234, 179, 8, 0.1); box-shadow: 0 5px 15px var(--uri-yellow-glow); }
+
+        /* --- Modal (Pop-up) Styling --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+            padding: 1rem;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--bg-surface); border: 1px solid var(--border-light);
+            border-radius: 16px; width: 100%; max-width: 650px; padding: 3rem;
+            position: relative; transform: translateY(30px); transition: all 0.4s ease;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); border-top: 4px solid var(--uri-yellow);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-content.wide-modal { max-width: 800px; }
         
-        /* Notizen & Timer */
-        .ex-note { width: 100%; box-sizing: border-box; padding: 10px; background: var(--bg-color); border: 1px solid #444; color: white; border-radius: 6px; margin-bottom: 10px; font-family: inherit; resize: vertical; }
-        .timer-btns { display: flex; gap: 10px; margin-bottom: 15px; }
-        .timer-btn { flex: 1; padding: 8px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
-        .timer-btn:active { background: var(--primary); color: black; }
-        
-        /* Eingabefelder */
-        .set-row { display: flex; gap: 5px; margin-bottom: 10px; align-items: center; }
-        .set-label { width: 45px; font-size: 14px; font-weight: bold; }
-        input[type="number"] { flex: 1; min-width: 0; padding: 10px 5px; background: var(--bg-color); border: 1px solid #333; color: var(--text-main); border-radius: 6px; font-size: 14px; text-align: center; }
-        
-        .btn-save { width: 100%; padding: 15px; background-color: var(--success); color: #000; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        /* Historie & Charts */
-        #history-section { display: none; }
-        .chart-container { position: relative; height: 300px; width: 100%; background: var(--card-bg); border-radius: 12px; padding: 10px; box-sizing: border-box; margin-bottom: 20px; }
-        .history-list { margin-top: 20px; }
-        .history-entry { background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--primary); font-size: 14px; }
-        .history-date { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
-        .badge-1rm { font-size: 11px; background: #333; color: var(--primary); padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
-        
-        /* Timer Bar & Toast */
-        #timer-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--primary); color: #000; padding: 15px; text-align: center; font-weight: bold; font-size: 20px; z-index: 1000; display: none; box-shadow: 0 -2px 10px rgba(0,0,0,0.5); justify-content: center; align-items: center; gap: 20px; }
-        .timer-close { background: rgba(0,0,0,0.2); border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: bold; cursor: pointer; }
-        #toast { visibility: hidden; min-width: 250px; background-color: var(--success); color: #000; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 30px; font-weight: bold; transform: translateX(-50%); }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .close-modal {
+            position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none;
+            color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; transition: color 0.2s;
+            z-index: 10;
+        }
+        .close-modal:hover { color: var(--uri-yellow); }
+        .modal-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .modal-icon { font-size: 2rem; background: rgba(234, 179, 8, 0.1); padding: 1rem; border-radius: 12px; }
+        .modal-body h4 { color: #fff; font-size: 1.3rem; margin-bottom: 1rem; }
+        .modal-body p { color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6; }
+        .modal-body ul { color: var(--text-secondary); padding-left: 1.5rem; margin-bottom: 1.5rem; }
+        .modal-body li { margin-bottom: 0.5rem; }
+
+        .video-wrapper {
+            position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+            border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.1); background: #000;
+        }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .motivation-text p { margin-bottom: 1.2rem; color: var(--text-secondary); line-height: 1.8; text-align: justify; }
+        .motivation-text h5 { color: #fff; font-size: 1.15rem; margin-top: 2rem; margin-bottom: 0.8rem; }
+
+        /* --- Digitaler Flyer & CV --- */
+        .help-section { background: linear-gradient(145deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.9) 100%); border-radius: 20px; padding: 5rem 2rem; text-align: center; border: 1px solid var(--border-light); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .contact-numbers { display: flex; justify-content: center; gap: 2rem; margin: 3rem 0; flex-wrap: wrap; }
+        .number-box { background: rgba(255,255,255,0.03); padding: 2rem 3.5rem; border-radius: 12px; border: 1px solid var(--border-light); font-size: 1.1rem; color: var(--text-secondary); transition: transform 0.3s ease; }
+        .number-box:hover { transform: translateY(-5px); background: rgba(255,255,255,0.05); }
+        .number-box strong { display: block; font-size: 2.5rem; color: var(--uri-yellow); margin-top: 0.5rem; font-weight: 700; }
+        .btn-exit { background-color: transparent; color: var(--alert-red); border: 2px solid var(--alert-red); margin-top: 2rem; }
+        .btn-exit:hover { background-color: var(--alert-red); color: #ffffff; box-shadow: 0 10px 20px rgba(225, 29, 72, 0.2); }
+
+        .profile-header { background: var(--bg-surface); backdrop-filter: blur(10px); padding: 3rem 2rem; border-radius: 16px; margin-bottom: 5rem; text-align: center; border: 1px solid var(--border-light); }
+        .profile-header h3 { font-size: 2.2rem; color: #ffffff; margin-bottom: 0.8rem; }
+        .profile-details { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; margin-top: 2rem; }
+        .profile-details span { background: rgba(0,0,0,0.3); padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.05); }
+
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; }
+        .timeline::after { content: ''; position: absolute; width: 2px; background: linear-gradient(to bottom, var(--uri-yellow), rgba(234,179,8,0.1)); top: 0; bottom: 0; left: 50%; margin-left: -1px; }
+        .timeline-item { padding: 0 40px 40px 40px; position: relative; width: 50%; }
+        .timeline-item::after { content: ''; position: absolute; width: 16px; height: 16px; right: -8px; background-color: var(--bg-base); border: 3px solid var(--uri-yellow); top: 0; border-radius: 50%; z-index: 1; box-shadow: 0 0 10px var(--uri-yellow-glow); }
+        .left { left: 0; }
+        .right { left: 50%; }
+        .right::after { left: -8px; }
+        .timeline-content { background: var(--bg-surface); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-light); transition: transform 0.3s ease; }
+        .timeline-content:hover { transform: scale(1.02); border-color: rgba(255,255,255,0.15); }
+        .timeline-date { color: var(--uri-yellow); font-weight: 600; font-size: 0.85rem; margin-bottom: 0.8rem; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
+        .timeline-content h4 { color: #ffffff; font-size: 1.25rem; margin-bottom: 1rem; }
+        .timeline-content p { color: var(--text-secondary); font-size: 0.95rem; }
+
+        footer { text-align: center; padding: 3rem; color: var(--text-secondary); border-top: 1px solid var(--border-light); font-size: 0.9rem; margin-top: 2rem; }
+
+        @media screen and (max-width: 768px) {
+            .timeline::after { left: 24px; }
+            .timeline-item { width: 100%; padding-left: 60px; padding-right: 0; }
+            .timeline-item::after { left: 16px; }
+            .right { left: 0; }
+            .info-split { grid-template-columns: 1fr; gap: 2rem; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>Homegym Tracker</h1>
-    
-    <div class="nav-buttons">
-        <button id="btn-workout" class="btn active">🏋️ Training</button>
-        <button id="btn-history" class="btn">📊 Fortschritt</button>
-    </div>
+    <header id="hero">
+        <div class="logo-container">
+            <img src="image_e824a1.png" alt="Kapo Uri Logo">
+        </div>
+        <h1 class="hero-title">Mit grosser Macht kommt<br><span>grosse Verantwortung.</span></h1>
+        <p class="hero-subtitle">Les dés sont jetés.</p>
+        <p class="hero-quote">«Wer etwas will, findet Wege. Wer etwas nicht will, findet Gründe.»</p>
+        <a href="https://www.nidwaldnerzeitung.ch/zentralschweiz/nidwalden/personalmangel-fluktuationsrate-bei-nidwaldner-kantonspolizei-etwas-hoeher-als-bei-anderen-korps-ld.2522035" class="btn">Mehr erfahren</a>
+    </header>
 
-    <!-- WORKOUT SECTION -->
-    <div id="workout-section">
-        <select id="workout-selector">
-            <option value="" disabled selected>Lade Daten aus Cloud...</option>
-            <option value="OK1">Oberkörper 1 (Brust & Dichte)</option>
-            <option value="UK1">Unterkörper 1 (Quads & Dehnung)</option>
-            <option value="OK2">Oberkörper 2 (Breite & Schultern)</option>
-            <option value="UK2">Unterkörper 2 (Beinrückseite)</option>
-        </select>
-        <div id="workout-container"></div>
-        <button id="save-btn" class="btn-save" style="display:none;">💾 Training Speichern</button>
-    </div>
-
-    <!-- HISTORY SECTION -->
-    <div id="history-section">
-        <select id="history-selector">
-            <option value="" disabled selected>Übung für Analyse wählen...</option>
-        </select>
-        <select id="metric-selector" style="display:none; background:#333; border:none; margin-bottom:10px;">
-            <option value="max">📈 Maximales Gewicht</option>
-            <option value="vol">📦 Tonnage (Gesamtvolumen)</option>
-            <option value="1rm">💪 Geschätztes 1RM (Epley)</option>
-        </select>
-        <div class="chart-container"><canvas id="progressChart"></canvas></div>
-        <div id="history-list-container" class="history-list"></div>
-    </div>
-
-    <div id="toast">Workout gespeichert! 💪</div>
-    
-    <div id="timer-bar">
-        ⏳ Pause: <span id="timer-display"></span> 
-        <button class="timer-close" onclick="window.stopTimer()">X</button>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCZaBxiXvtkoeUFjKkwlcIUihhHaIkTYAw",
-            authDomain: "homegym-tracker-3fdd4.firebaseapp.com",
-            projectId: "homegym-tracker-3fdd4",
-            storageBucket: "homegym-tracker-3fdd4.firebasestorage.app",
-            messagingSenderId: "866653861174",
-            appId: "1:866653861174:web:28685adda348103c15ef97",
-            measurementId: "G-4QW6KENRYB"
-        };
-
-        let app, db, docRef;
-        let historyObj = {};
-        let chartInstance = null;
-        let timerInterval = null;
-
-        const plans = {
-            "OK1": [
-                { id: "ok1_1", name: "Bankdrücken", target: "4 Sätze x 8–10 Wdh." }, 
-                { id: "ok1_2", name: "Klimmzüge (Zusatzgewicht)", target: "3 Sätze x 8–10 Wdh." }, 
-                { id: "ok1_3", name: "Dips (Zusatzgewicht)", target: "3 Sätze x 8–12 Wdh." }, 
-                { id: "ok1_4", name: "Vorgebeugtes Rudern", target: "3 Sätze x 8–12 Wdh." }, 
-                { id: "ok1_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." },
-                { id: "ok1_6", name: "Langhantel-Curls (Bizeps)", target: "3 Sätze x 10–12 Wdh." },
-                { id: "ok1_7", name: "Nacken-Curls (Hantelscheibe)", target: "3 Sätze x 15–20 Wdh." }
-            ],
-            "UK1": [
-                { id: "uk1_1", name: "Tiefe Kniebeugen", target: "4 Sätze x 8–10 Wdh." }, 
-                { id: "uk1_2", name: "Rumänisches Kreuzheben", target: "3 Sätze x 8–10 Wdh." }, 
-                { id: "uk1_3", name: "Beinstrecker", target: "3 Sätze x 10–12 Wdh." }, 
-                { id: "uk1_4", name: "Wadenheben stehend", target: "4 Sätze x 12–15 Wdh." }
-            ],
-            "OK2": [
-                { id: "ok2_1", name: "Klimmzüge (Zusatzgewicht)", target: "4 Sätze x 8–10 Wdh." }, 
-                { id: "ok2_2", name: "Schulterdrücken", target: "3 Sätze x 8–10 Wdh." }, 
-                { id: "ok2_3", name: "Bankdrücken o. Butterfly", target: "3 Sätze x 8–12 Wdh." }, 
-                { id: "ok2_4", name: "Dips (Körpergewicht)", target: "3 Sätze x AMRAP" }, 
-                { id: "ok2_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." },
-                { id: "ok2_6", name: "Trizeps-Drücken über Kopf (KB)", target: "3 Sätze x 10–12 Wdh." },
-                { id: "ok2_7", name: "Langhantel-Shrugs", target: "3 Sätze x 10–12 Wdh." }
-            ],
-            "UK2": [
-                { id: "uk2_1", name: "Rumänisches Kreuzheben", target: "4 Sätze x 8–10 Wdh." }, 
-                { id: "uk2_2", name: "Beinbeuger", target: "3 Sätze x 10–12 Wdh." }, 
-                { id: "uk2_3", name: "Ausfallschritte o. Kniebeugen", target: "3 Sätze x 10–12 Wdh." }, 
-                { id: "uk2_4", name: "Planks (Zusatzgewicht)", target: "3 Sätze x 45–60 Sek." }
-            ]
-        };
-
-        const btnWorkout = document.getElementById('btn-workout');
-        const btnHistory = document.getElementById('btn-history');
-        const workoutSelector = document.getElementById('workout-selector');
-        const historySelector = document.getElementById('history-selector');
-        const metricSelector = document.getElementById('metric-selector');
-        const saveBtn = document.getElementById('save-btn');
-        
-        btnWorkout.addEventListener('click', () => switchTab('workout'));
-        btnHistory.addEventListener('click', () => switchTab('history'));
-        workoutSelector.addEventListener('change', renderWorkout);
-        historySelector.addEventListener('change', renderHistory);
-        metricSelector.addEventListener('change', renderHistory);
-        saveBtn.addEventListener('click', saveWorkout);
-
-        try {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            docRef = doc(db, "homegym", "historyData");
-            loadCloudData();
-        } catch(error) {
-            alert("Fehler bei Firebase-Start: " + error.message);
-        }
-
-        async function loadCloudData() {
-            try {
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) historyObj = docSnap.data();
-                workoutSelector.options[0].text = "Wähle dein Training...";
-            } catch(e) {
-                alert("Verbindungsfehler: " + e.message);
-            }
-        }
-
-        window.startTimer = function(seconds) {
-            clearInterval(timerInterval);
-            const tb = document.getElementById('timer-bar');
-            const td = document.getElementById('timer-display');
-            tb.style.display = 'flex';
-            let timeLeft = seconds;
-            td.innerText = Math.floor(timeLeft/60) + ":" + String(timeLeft%60).padStart(2, '0');
+    <section id="kbm-aktuell">
+        <h2>Das KBM Uri – <span>Neu gedacht</span></h2>
+        <div class="kbm-redesign-section">
+            <p class="kbm-intro">
+                "Hinter dem Bedrohungsmanagement steht die Erkenntnis, dass schweren Gewalttaten nahezu immer <strong>erkennbare Warnsignale</strong> vorausgehen."<br>
+                <span style="font-size: 0.9rem; display: block; margin-top: 1rem; color: var(--text-secondary);">Anstatt wichtige Informationen in Textwüsten und Akkordeons zu verstecken, müssen wir die Kernprozesse für das Korps und die Bevölkerung sofort greifbar machen:</span>
+            </p>
             
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                td.innerText = Math.floor(timeLeft/60) + ":" + String(timeLeft%60).padStart(2, '0');
-                if(timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    tb.style.display = 'none';
-                    if(navigator.vibrate) navigator.vibrate([500, 200, 500]);
-                    alert("Pause beendet! Zeit für den nächsten Satz 💪");
-                }
-            }, 1000);
-        };
+            <div class="kbm-steps-grid">
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <h4>Erkennen</h4>
+                    <p>Spezifische Verhaltensmuster und potenziell risikobehaftetes Verhalten frühzeitig identifizieren.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <h4>Einschätzen</h4>
+                    <p>Mit speziellen Analyse-Instrumenten bewerten, wieweit ein Risiko vorhanden ist.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <h4>Entschärfen</h4>
+                    <p>Interdisziplinäre Zusammenarbeit von Fachleuten, um das dynamische Risiko fallbegleitend zu minimieren.</p>
+                </div>
+            </div>
 
-        window.stopTimer = function() {
-            clearInterval(timerInterval);
-            document.getElementById('timer-bar').style.display = 'none';
-        };
+            <div class="info-split">
+                <div class="info-block">
+                    <h4>Themen & Beratungsstellen</h4>
+                    <p>Ein Klick muss genügen, um die richtige Hilfe zu finden.</p>
+                    <div class="tags-container">
+                        <span class="tag">Drohung</span> <span class="tag">Häusliche Gewalt</span>
+                        <span class="tag">Stalking</span> <span class="tag">Suizid</span>
+                        <span class="tag">Amok</span> <span class="tag">Sexuelle Gewalt</span>
+                        <span class="tag">Suchtproblematik</span> <span class="tag">Opfer & Angehörige</span>
+                    </div>
+                </div>
+                <div class="info-block">
+                    <h4>Eine Person melden</h4>
+                    <p>Damit wir schnell und gezielt handeln können, benötigen wir präzise Informationen aus erster Hand:</p>
+                    <ul style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.8; padding-left: 1.5rem;">
+                        <li><strong>Zeitlinie:</strong> Der genaue chronologische Ablauf der Ereignisse.</li>
+                        <li><strong>Wortlaut & Verhalten:</strong> Präzise Zitate und der emotionale Zustand.</li>
+                        <li><strong>Eskalationsmerkmale:</strong> Hinweise auf Waffen oder Suizidgedanken.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        function switchTab(tab) {
-            document.getElementById('workout-section').style.display = tab === 'workout' ? 'block' : 'none';
-            document.getElementById('history-section').style.display = tab === 'history' ? 'block' : 'none';
-            btnWorkout.classList.toggle('active', tab === 'workout');
-            btnHistory.classList.toggle('active', tab === 'history');
-            if (tab === 'history') populateHistorySelector();
-        }
+    <!-- EIGENE VISIONEN VERSTECKT (display: none) -->
+    <section id="konzepte" style="display: none;">
+        <h2>Meine Vision für die <span>Präventionsdienste</span></h2>
+        <div class="grid-container">
+            <div class="card">
+                <h3>KBM & Häusliche Gewalt</h3>
+                <span class="card-focus">Fokus: Enttabuisierung & direkte Kommunikation</span>
+                <p>Weg von anonymen Flyern, hin zu nahbaren Gesichtern. Das KBM muss intern im Korps und extern für die Bevölkerung sichtbar sein. Durch moderne Social-Media-Kampagnen senken wir die Hemmschwelle für Hilfesuchende.</p>
+                <button class="btn-outline" onclick="openModal('modal-kbm')">Konkrete Video-Ideen</button>
+            </div>
+            
+            <div class="card">
+                <h3>VSI (Verkehrssicherheit)</h3>
+                <span class="card-focus">Fokus: Digitale Präsenz & Jugendkommunikation</span>
+                <p>Verkehrsinstruktion darf nicht am Schulhof enden. Mit zielgruppengerechtem Content auf den Kanälen der Kapo Uri holen wir Jugendliche genau dort ab, wo sie sich aufhalten.</p>
+                <button class="btn-outline" onclick="openModal('modal-vsi')">Konkrete Video-Ideen</button>
+            </div>
 
-        function getCalculated1RM(weight, reps) {
-            if(reps === 0 || weight === 0) return 0;
-            return Math.round(weight * (1 + (reps / 30)));
-        }
+            <div class="card">
+                <h3>Waffenbüro & Varia</h3>
+                <span class="card-focus">Fokus: Transparenz & Aufklärung</span>
+                <p>Komplexe juristische und technische Themen verständlich machen. Klare, visuell ansprechende Kurzvideos im digitalen Raum stärken das Sicherheitsgefühl und beugen Delikten proaktiv vor.</p>
+                <button class="btn-outline" onclick="openModal('modal-waffen')">Konkrete Video-Ideen</button>
+            </div>
+        </div>
+    </section>
 
-        function renderWorkout() {
-            const selectedPlan = workoutSelector.value;
-            const container = document.getElementById('workout-container');
-            container.innerHTML = '';
-            if (!selectedPlan) { saveBtn.style.display = 'none'; return; }
-            saveBtn.style.display = 'block';
+    <section id="hilfe">
+        <h2>Der <span>Digitale Flyer</span></h2>
+        <p style="text-align: center; color: var(--text-secondary); max-width: 700px; margin: 0 auto 3rem auto;">Ein interaktiver Prototyp, der zeigt, wie moderne Prävention funktioniert: Niederschwellig, sofort verfügbar und kompromisslos sicher für Betroffene.</p>
+        
+        <div class="help-section">
+            <h3 style="color: white; font-size: 2rem; margin-bottom: 1rem;">Du bist nicht allein. Wir sind für dich da.</h3>
+            <div class="contact-numbers">
+                <div class="number-box">Polizei Notruf<strong>117</strong></div>
+                <div class="number-box">Opferhilfe Uri<strong>041 875 20 62</strong></div>
+            </div>
+            <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto;">Wenn du dich bedroht fühlst, zögere nicht. Klicke auf den Button unten, um diese Seite sofort und spurlos zu verlassen, falls jemand den Raum betritt.</p>
+            <button onclick="quickExit()" class="btn btn-exit">Sicherer Ausstieg (Quick Exit)</button>
+        </div>
+    </section>
 
-            plans[selectedPlan].forEach(ex => {
-                const sets = parseInt(ex.target.charAt(0)); 
-                let historyText = "Noch keine Daten.";
-                let latestNote = "";
+    <section id="cv">
+        <h2>Profil & <span>Erfahrung</span></h2>
+        <div class="profile-header">
+            <h3>Remo Tresch</h3>
+            <p style="color: var(--text-secondary); font-size: 1.15rem; max-width: 800px; margin: 0 auto;">Erfahrene Führungspersönlichkeit (12+ Jahre Polizeidienst) mit Fokus auf operative Einsätze, Krisenmanagement und moderne digitale Kommunikation.</p>
+            <div class="profile-details">
+                <span>📍 6460 Altdorf UR</span>
+                <span>📞 079 842 03 04</span>
+                <span>✉️ remo.tresch@ur.ch</span>
+                <span>💪 Ausgleich: Kampfsport (MMA) & Halbmarathon-Training</span>
+            </div>
+        </div>
+        <div class="timeline">
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <span class="timeline-date">November 2024 – Heute</span>
+                    <h4>Wachtmeister / Schichtchef SVZ</h4>
+                    <p>Operative Führungsverantwortung der Schicht und Koordination externer Partner. Fokus auf lückenlose Einhaltung komplexer Vorschriften, Qualitätskontrolle und Rechtssicherheit.</p>
+                </div>
+            </div>
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <span class="timeline-date">Januar 2026 – Heute (Nebenamt)</span>
+                    <h4>Social Media & Content Creator SVZ</h4>
+                    <p>Verantwortlich für den digitalen Auftritt. Konzeption, Dreh und Schnitt von Video-Content, um die polizeiliche Arbeit transparent und modern zu präsentieren (inkl. technischer Umsetzung).</p>
+                </div>
+            </div>
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <span class="timeline-date">Mai 2014 – November 2024</span>
+                    <h4>Polizist Kapo Uri</h4>
+                    <p>10 Jahre Bereitschafts- und Verkehrspolizei. Erstausrückende Patrouille, operatives Krisenmanagement und Leitung der ersten Einsatzkräfte bei Vorfällen mit hohem Sicherheitspotenzial.</p>
+                </div>
+            </div>
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <span class="timeline-date">Januar 2020 – Dezember 2025 (Nebenamt)</span>
+                    <h4>Polizeilicher Verhandler (ZPK)</h4>
+                    <p>Spezialist für Deeskalation und lösungsorientierte Kommunikation. Verhandlungsführung unter Druck in kritischen Stresssituationen.</p>
+                </div>
+            </div>
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <span class="timeline-date">September 2019 – Heute (Nebenamt)</span>
+                    <h4>PSI Instruktor</h4>
+                    <p>Zertifizierter Instruktor. Verantwortlich für die jährliche Aus- und Weiterbildung in operativen Sicherheitsmodulen. Didaktisch saubere Vermittlung komplexer Abläufe.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BEWERBUNG / MOTIVATIONSSCHREIBEN VERSTECKT (display: none) -->
+    <section id="motivation" style="text-align: center; padding-top: 2rem; padding-bottom: 6rem; display: none;">
+        <h2>Mein <span>Warum</span></h2>
+        <p style="color: var(--text-secondary); max-width: 700px; margin: 0 auto 3rem auto;">Erfahren Sie mehr über meine persönlichen Beweggründe und meine strategische Vision für diese Position.</p>
+        <button class="btn" onclick="openModal('modal-motivation')" style="padding: 1.2rem 3rem; font-size: 1.1rem;">Motivationsschreiben lesen</button>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Remo Tresch | Dienstchef Präventionsdienste</p>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- MODALS (Pop-ups für die Fachbereiche)      -->
+    <!-- (Werden nie aufgerufen, da Buttons unsichtbar) -->
+    <!-- ========================================== -->
+
+    <!-- Modal 1: KBM -->
+    <div id="modal-kbm" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal(event, true)">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon">🛑</div>
+                <h3 style="color: #fff;">Video-Konzepte: KBM</h3>
+            </div>
+            <div class="modal-body">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/VOfzn2tpyNo?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+                <h4>Referenz: Bedrohungsmanagement Basel-Stadt</h4>
+                <p>Dieses Video der Kantonspolizei Basel-Stadt ist ein exzellentes Beispiel dafür, wie komplexe Strukturen des KBM visuell leicht verdaulich und bürgernah für die Bevölkerung aufbereitet werden können.</p>
+                <ul>
+                    <li><strong>Format:</strong> Emotionales, erklärendes Format.</li>
+                    <li><strong>Ziel:</strong> Enorme Reichweite durch leichte Teilbarkeit und Sensibilisierung des Umfelds (Nachbarn, Freunde, Behörden).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: VSI -->
+    <div id="modal-vsi" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal(event, true)">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon">🚲</div>
+                <h3 style="color: #fff;">Video-Konzepte: VSI</h3>
+            </div>
+            <div class="modal-body">
+                 <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/3u1fYgjAo-w?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+                <h4>Referenz: Stadtpolizei Kloten</h4>
+                <p>Verkehrsinstruktion modern gedacht: Nach meinem Kontakt mit dem Chef VSI wurde mir bestätigt, dass Präventionsvideos extremes Potenzial haben. Dieses Beispiel aus Kloten zeigt die Tonalität, mit der wir Schüler im digitalen Alltag abholen.</p>
+                <ul>
+                    <li><strong>Fahrradwege richtig nutzen:</strong> Gefährliche Kreuzungen sicher befahren.</li>
+                    <li><strong>Schulstart-Check:</strong> Obligatorische Ausrüstung für Fahrräder.</li>
+                    <li><strong>Ziel:</strong> Schulungsstoff aus dem Klassenzimmer auf das Smartphone verlängern.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Waffenbüro -->
+    <div id="modal-waffen" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal(event, true)">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon">🛡️</div>
+                <h3 style="color: #fff;">Video-Konzepte: Waffenbüro</h3>
+            </div>
+            <div class="modal-body">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/6IWjrTESGm4?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+                <h4>Referenz: Waffen und Gesetz – 10 Fakten</h4>
+                <p>Das Waffenrecht ist oft trocken und komplex. Dieses Best-Practice-Beispiel zeigt, wie wir Aufklärung schaffen, ohne unnötig bürokratisch zu wirken.</p>
+                <ul>
+                    <li><strong>Wissen verpacken:</strong> Kurze, knackige Videos zu Neuerungen im Gesetz (z.B. Waffenaufbewahrung zu Hause).</li>
+                    <li><strong>Ziel:</strong> Dem Thema die Schwere nehmen, Transparenz schaffen und Unfällen oder strafbaren Handlungen aus Unwissenheit aktiv vorbeugen.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Motivationsschreiben -->
+    <div id="modal-motivation" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content wide-modal">
+            <button class="close-modal" onclick="closeModal(event, true)">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon">📄</div>
+                <h3 style="color: #fff;">Anlage zur Bewerbung: Motivationsschreiben</h3>
+            </div>
+            <div class="modal-body motivation-text" style="text-align: left;">
+                <h4 style="color: var(--uri-yellow); font-size: 1.25rem; margin-bottom: 2rem;">Warum ich Dienstchef Präventionsdienste werden will – Vom Reagieren zum proaktiven Gestalten</h4>
                 
-                if(historyObj[ex.id] && historyObj[ex.id].length > 0) {
-                    const sessionArr = historyObj[ex.id];
-                    const lastSession = sessionArr[sessionArr.length - 1];
-                    let bestW = 0; let bestR = 0;
-                    lastSession.sets.forEach(s => { if(s.w > bestW || (s.w === bestW && s.r > bestR)) { bestW = s.w; bestR = s.r; }});
-                    historyText = `Letztes Mal: ${bestW} kg x ${bestR} Wdh`;
+                <p>Sehr geehrte Damen und Herren,</p>
+                
+                <p>in meinen über zwölf Jahren im Polizeidienst – davon rund ein Jahrzehnt als erstausrückender Polizist an der Front – habe ich unzählige Male erlebt, was passiert, wenn Prävention fehlt oder zu spät greift. Wenn wir wegen häuslicher Gewalt ausrücken, bei schweren Verkehrsunfällen erste Hilfe leisten oder in Bedrohungslagen intervenieren müssen, sammeln wir die Scherben auf. Diese Arbeit ist essenziell und hat mich als Polizist geprägt. Doch über die Jahre ist in mir eine klare Überzeugung gereift: Der grösste Hebel für die Sicherheit der Bevölkerung liegt nicht in der perfekten Reaktion auf ein Delikt, sondern in dessen Verhinderung.</p>
+                
+                <p>Genau deshalb strebe ich die Funktion als Dienstchef Präventionsdienste an. Ich möchte den Schritt vom Reagieren zum strategischen, proaktiven Gestalten machen.</p>
+                
+                <h5>Das Potenzial des KBM entfesseln</h5>
+                <p>Das Kantonale Bedrohungsmanagement (KBM) leistet im Hintergrund hervorragende Arbeit, aber aus meiner Sicht als Schichtchef und langjähriger Frontpolizist weiss ich: Das KBM ist für die Kollegen an der Basis und für die Öffentlichkeit oft nicht greifbar genug. Die beste Fachstelle verliert an Wirkung, wenn Gefährdete aus Unwissenheit den Weg dorthin nicht finden oder wenn Patrouillen die Warnsignale nicht sofort richtig einordnen können. Meine Motivation ist es, das KBM aus dem Schatten zu holen. Ich möchte die Fachstelle intern als unverzichtbaren, taktischen Partner für die Front etablieren und extern als nahbare, vertrauenswürdige Anlaufstelle positionieren.</p>
+                
+                <h5>Meine Leidenschaft für moderne Prävention</h5>
+                <p>Prävention war lange Zeit geprägt von Frontalunterricht und gedruckten Flyern. Heute findet die Lebensrealität – insbesondere die der Jugendlichen im Bereich VSI oder Cybercrime – auf dem Smartphone statt. Meine grosse persönliche Leidenschaft ist die digitale Kommunikation. Als Verantwortlicher für den Social-Media-Auftritt des Schwerverkehrszentrums und als privater Content Creator habe ich gelernt, wie man Aufmerksamkeit lenkt, komplexe Botschaften in Sekunden auf den Punkt bringt und eine Community aufbaut.</p>
+                
+                <p>Ich bewerbe mich auf diese Stelle, weil ich dieses Wissen nicht nur für Unterhaltung oder klassische PR nutzen will. Ich will diese Werkzeuge nutzen, um Menschen zu schützen. Wenn wir mit einem starken Instagram-Reel einen Jugendlichen für den toten Winkel sensibilisieren oder mit einer klaren digitalen Kampagne einem Opfer häuslicher Gewalt den Weg aus der Isolation aufzeigen, dann hat moderne Polizeiarbeit ihr Ziel erreicht. Das ist mein Antrieb.</p>
+                
+                <h5>Führung mit Rückgrat und Empathie</h5>
+                <p>Die Leitung der Präventionsdienste erfordert nicht nur fachliches Know-how, sondern auch die Fähigkeit, unterschiedlichste Anspruchsgruppen zusammenzubringen. Durch meine Ausbildung zum polizeilichen Verhandler und meine Funktion als PSI Instruktor bin ich es gewohnt, in extremen Stresssituationen deeskalierend zu kommunizieren, zuzuhören und gleichzeitig klare Grenzen zu ziehen. Diese Kombination aus Empathie und Durchsetzungsvermögen möchte ich als Dienstchef einbringen – sei es in der Führung meiner Mitarbeitenden, in der Zusammenarbeit mit anderen Behörden oder bei heiklen KBM-Fällen.</p>
+                
+                <h5>Bereit für den Sprung</h5>
+                <p>Ich weiss, dass der direkte Wechsel in diese Kaderposition ungewöhnlich und ein massiver Karrieresprung ist. Aber ich habe in meinem sportlichen wie beruflichen Leben nie den Weg des geringsten Widerstands gewählt. Ich scheue keine Herausforderungen, ich bereite mich auf sie vor. Ich brenne für diese Aufgabe, weil sie meine operative Härte, mein taktisches Verständnis und meine digitale Kreativität in einer einzigen Position vereint.</p>
+                
+                <p>Ich möchte Dienstchef Präventionsdienste werden, weil ich fest daran glaube, dass wir im Kanton Uri das Potenzial haben, die modernste, sichtbarste und effektivste Präventionsarbeit der Zentralschweiz aufzubauen. Dafür bin ich bereit, harte Arbeit und vollen Einsatz zu leisten.</p>
+                
+                <p style="margin-top: 2.5rem;">Freundliche Grüsse</p>
+                <p style="margin-top: 1.5rem; color: #fff;"><strong>Remo Tresch</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript für Quick Exit, Modals & 15-Sekunden Auto-Redirect -->
+    <script>
+        function quickExit() {
+            window.location.replace("https://www.google.ch/search?q=wetter+uri");
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event, forceClose = false) {
+            if (forceClose || event.target.classList.contains('modal-overlay')) {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.classList.remove('active');
                     
-                    for(let i = sessionArr.length - 1; i >= 0; i--) {
-                        if(sessionArr[i].note) { latestNote = sessionArr[i].note; break; }
-                    }
-                }
-
-                let cardHTML = `
-                    <div class="exercise-card">
-                        <div class="exercise-title">${ex.name}</div>
-                        <div class="exercise-target">Ziel: ${ex.target} | <span class="last-workout">${historyText}</span></div>
-                        <textarea id="${ex.id}_note" class="ex-note" placeholder="Geräte-Setup / Notizen (z.B. Loch 14)...">${latestNote}</textarea>
-                        <div class="timer-btns">
-                            <button class="timer-btn" onclick="window.startTimer(90)">⏱ 90s Pause</button>
-                            <button class="timer-btn" onclick="window.startTimer(120)">⏱ 120s Pause</button>
-                        </div>
-                `;
-                
-                for(let i=1; i<=sets; i++) {
-                    cardHTML += `
-                        <div class="set-row">
-                            <span class="set-label">S. ${i}</span>
-                            <input type="number" step="0.5" id="${ex.id}_w_${i}" placeholder="Kg">
-                            <input type="number" id="${ex.id}_r_${i}" placeholder="Wdh">
-                            <input type="number" id="${ex.id}_rir_${i}" placeholder="RIR">
-                        </div>`;
-                }
-                cardHTML += `</div>`;
-                container.innerHTML += cardHTML;
-            });
-        }
-
-        async function saveWorkout() {
-            saveBtn.innerText = "Speichere...";
-            const selectedPlan = workoutSelector.value;
-            const now = new Date();
-            const dateString = now.toLocaleDateString('de-CH') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-
-            plans[selectedPlan].forEach(ex => {
-                const sets = parseInt(ex.target.charAt(0));
-                let sessionSets = [];
-                const noteVal = document.getElementById(`${ex.id}_note`).value;
-
-                for(let i=1; i<=sets; i++) {
-                    const wVal = parseFloat(document.getElementById(`${ex.id}_w_${i}`).value) || 0;
-                    const rVal = parseInt(document.getElementById(`${ex.id}_r_${i}`).value) || 0;
-                    const rirVal = document.getElementById(`${ex.id}_rir_${i}`).value;
-                    
-                    if(wVal > 0 || rVal > 0) {
-                        sessionSets.push({ set: i, w: wVal, r: rVal, rir: rirVal });
-                    }
-                }
-                
-                if(sessionSets.length > 0 || noteVal !== "") {
-                    if(!historyObj[ex.id]) historyObj[ex.id] = [];
-                    historyObj[ex.id].push({ date: dateString, sets: sessionSets, note: noteVal });
-                }
-            });
-
-            try {
-                await setDoc(docRef, historyObj);
-                const toast = document.getElementById("toast");
-                toast.className = "show";
-                setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-                renderWorkout(); 
-            } catch(e) {
-                alert("Fehler beim Speichern: " + e.message);
-            } finally {
-                saveBtn.innerText = "💾 Training Speichern";
-            }
-        }
-
-        function populateHistorySelector() {
-            historySelector.innerHTML = '<option value="" disabled selected>Übung für Analyse wählen...</option>';
-            let hasData = false;
-            Object.values(plans).forEach(plan => {
-                plan.forEach(ex => {
-                    if(historyObj[ex.id] && historyObj[ex.id].length > 0) {
-                        historySelector.innerHTML += `<option value="${ex.id}">${ex.name}</option>`;
-                        hasData = true;
+                    const iframe = modal.querySelector('iframe');
+                    if (iframe) {
+                        let src = iframe.src;
+                        iframe.src = src; 
                     }
                 });
-            });
-            metricSelector.style.display = hasData ? 'block' : 'none';
-        }
-
-        function renderHistory() {
-            const exId = historySelector.value;
-            const metric = metricSelector.value;
-            const data = historyObj[exId];
-            if(!data) return;
-
-            metricSelector.style.display = 'block';
-
-            let exName = "";
-            Object.values(plans).forEach(p => p.forEach(e => { if(e.id === exId) exName = e.name; }));
-
-            const labels = [];
-            const dataPoints = [];
-
-            data.forEach(d => {
-                if(d.sets.length === 0) return;
-                labels.push(d.date.split(' ')[0]);
-                
-                if(metric === 'max') {
-                    dataPoints.push(Math.max(...d.sets.map(s => s.w)));
-                } else if(metric === 'vol') {
-                    let vol = 0;
-                    d.sets.forEach(s => vol += (s.w * s.r));
-                    dataPoints.push(vol);
-                } else if(metric === '1rm') {
-                    let best1RM = 0;
-                    d.sets.forEach(s => {
-                        let est = getCalculated1RM(s.w, s.r);
-                        if(est > best1RM) best1RM = est;
-                    });
-                    dataPoints.push(best1RM);
-                }
-            });
-
-            if(chartInstance) chartInstance.destroy();
-            const ctx = document.getElementById('progressChart').getContext('2d');
-            
-            let labelText = metric === 'max' ? 'Max. Gewicht (kg)' : (metric === 'vol' ? 'Gesamtvolumen (kg)' : '1RM Epley (kg)');
-            let chartColor = metric === 'max' ? '#bb86fc' : (metric === 'vol' ? '#03dac6' : '#cf6679');
-            let bgChartColor = metric === 'max' ? 'rgba(187, 134, 252, 0.2)' : (metric === 'vol' ? 'rgba(3, 218, 198, 0.2)' : 'rgba(207, 102, 121, 0.2)');
-
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: { labels: labels, datasets: [{ label: labelText, data: dataPoints, borderColor: chartColor, backgroundColor: bgChartColor, borderWidth: 3, pointBackgroundColor: '#fff', pointRadius: 4, fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: {color: 'white'} } }, scales: { y: { grid: { color: '#333' }, ticks: { color: '#a0a0a0' }}, x: { grid: { display: false }, ticks: { color: '#a0a0a0' }}}}
-            });
-
-            const container = document.getElementById('history-list-container');
-            container.innerHTML = '<h3>Letzte Einträge:</h3>';
-            
-            for(let i = data.length - 1; i >= 0; i--) {
-                const session = data[i];
-                if(session.sets.length === 0 && !session.note) continue;
-                
-                let setDetails = session.sets.map(s => {
-                    let rirText = s.rir !== "" && s.rir !== undefined ? ` <span style="color:#a0a0a0;font-size:12px;">(RIR: ${s.rir})</span>` : "";
-                    let rmText = s.w > 0 && s.r > 0 ? `<span class="badge-1rm">1RM: ${getCalculated1RM(s.w, s.r)}kg</span>` : "";
-                    return `Satz ${s.set}: ${s.w}kg x ${s.r} Wdh${rirText} ${rmText}`;
-                }).join('<br>');
-                
-                let noteHtml = session.note ? `<div style="color:var(--primary); font-size:12px; margin-top:8px;">📝 Notiz: ${session.note}</div>` : "";
-                
-                container.innerHTML += `<div class="history-entry"><div class="history-date">📅 ${session.date} Uhr</div><div>${setDetails}</div>${noteHtml}</div>`;
+                document.body.style.overflow = 'auto';
             }
         }
+
+        // 15 Sekunden (15000ms) Weiterleitung zu Bullenpower-uri.ch
+        setTimeout(function() {
+            window.location.href = "https://Bullenpower-uri.ch";
+        }, 15000);
     </script>
 </body>
 </html>
