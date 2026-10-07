@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Homegym Tracker - OK/UK Hypertrophie</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --primary: #bb86fc;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --success: #03dac6;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        h1, h2 { text-align: center; }
+        select {
+            width: 100%;
+            padding: 15px;
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            appearance: none;
+        }
+        .exercise-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .exercise-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        .exercise-target {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+        .last-workout {
+            font-size: 13px;
+            color: var(--success);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .set-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .set-label { width: 50px; font-weight: bold; }
+        input[type="number"] {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-color);
+            border: 1px solid #333;
+            color: var(--text-main);
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .btn-save {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn-save:active { opacity: 0.8; }
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--success);
+            color: #000;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-weight: bold;
+            transform: translateX(-50%);
+        }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+
+    <h1>Homegym Tracker</h1>
+    
+    <select id="workout-selector" onchange="renderWorkout()">
+        <option value="" disabled selected>Wähle dein Training...</option>
+        <option value="OK1">Oberkörper 1 (Brust & Dichte)</option>
+        <option value="UK1">Unterkörper 1 (Quads & Dehnung)</option>
+        <option value="OK2">Oberkörper 2 (Breite & Schultern)</option>
+        <option value="UK2">Unterkörper 2 (Beinrückseite)</option>
+    </select>
+
+    <div id="workout-container"></div>
+
+    <button id="save-btn" class="btn-save" style="display:none;" onclick="saveWorkout()">Training Speichern</button>
+    <div id="toast">Workout gespeichert! 💪</div>
+
+    <script>
+        const plans = {
+            "OK1": [
+                { id: "ok1_1", name: "Langhantel-Bankdrücken", target: "4 Sätze x 8–10 Wdh." },
+                { id: "ok1_2", name: "Klimmzüge (mit Gewicht)", target: "3 Sätze x 8–10 Wdh." },
+                { id: "ok1_3", name: "Dips (mit Gewicht)", target: "3 Sätze x 8–12 Wdh." },
+                { id: "ok1_4", name: "Vorgebeugtes Rudern", target: "3 Sätze x 8–12 Wdh." },
+                { id: "ok1_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." }
+            ],
+            "UK1": [
+                { id: "uk1_1", name: "Tiefe Kniebeugen", target: "4 Sätze x 8–10 Wdh." },
+                { id: "uk1_2", name: "Rumänisches Kreuzheben", target: "3 Sätze x 8–10 Wdh." },
+                { id: "uk1_3", name: "Beinstrecker", target: "3 Sätze x 10–12 Wdh." },
+                { id: "uk1_4", name: "Wadenheben stehend", target: "4 Sätze x 12–15 Wdh." }
+            ],
+            "OK2": [
+                { id: "ok2_1", name: "Klimmzüge (mit Gewicht)", target: "4 Sätze x 8–10 Wdh." },
+                { id: "ok2_2", name: "Schulterdrücken", target: "3 Sätze x 8–10 Wdh." },
+                { id: "ok2_3", name: "Langhantel-Bankdrücken o. Butterfly", target: "3 Sätze x 8–12 Wdh." },
+                { id: "ok2_4", name: "Dips (Körpergewicht)", target: "3 Sätze x AMRAP" },
+                { id: "ok2_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." }
+            ],
+            "UK2": [
+                { id: "uk2_1", name: "Rumänisches Kreuzheben", target: "4 Sätze x 8–10 Wdh." },
+                { id: "uk2_2", name: "Beinbeuger", target: "3 Sätze x 10–12 Wdh." },
+                { id: "uk2_3", name: "Ausfallschritte o. Kniebeugen", target: "3 Sätze x 10–12 Wdh." },
+                { id: "uk2_4", name: "Planks (Zusatzgewicht)", target: "3 Sätze x 45–60 Sek." }
+            ]
+        };
+
+        // Lade Historie aus LocalStorage
+        let history = JSON.parse(localStorage.getItem('homegymHistory')) || {};
+
+        function renderWorkout() {
+            const selector = document.getElementById('workout-selector');
+            const container = document.getElementById('workout-container');
+            const saveBtn = document.getElementById('save-btn');
+            const selectedPlan = selector.value;
+            
+            container.innerHTML = '';
+            
+            if (!selectedPlan) {
+                saveBtn.style.display = 'none';
+                return;
+            }
+
+            saveBtn.style.display = 'block';
+            const exercises = plans[selectedPlan];
+
+            exercises.forEach(ex => {
+                const sets = parseInt(ex.target.charAt(0)); 
+                let historyText = "Noch keine Daten. Setz einen Reiz!";
+                
+                // Letztes Training abrufen
+                if(history[ex.id]) {
+                    const last = history[ex.id];
+                    historyText = `Letztes Mal: ${last.weight} kg x ${last.reps} Wdh (am ${last.date})`;
+                }
+
+                let cardHTML = `
+                    <div class="exercise-card">
+                        <div class="exercise-title">${ex.name}</div>
+                        <div class="exercise-target">Ziel: ${ex.target}</div>
+                        <div class="last-workout">${historyText}</div>
+                `;
+
+                for(let i=1; i<=sets; i++) {
+                    cardHTML += `
+                        <div class="set-row">
+                            <span class="set-label">Satz ${i}</span>
+                            <input type="number" step="0.5" id="${ex.id}_w_${i}" placeholder="Kg">
+                            <input type="number" id="${ex.id}_r_${i}" placeholder="Wdh">
+                        </div>
+                    `;
+                }
+                cardHTML += `</div>`;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        function saveWorkout() {
+            const selector = document.getElementById('workout-selector');
+            const selectedPlan = selector.value;
+            const exercises = plans[selectedPlan];
+            const today = new Date().toLocaleDateString('de-CH');
+
+            exercises.forEach(ex => {
+                const sets = parseInt(ex.target.charAt(0));
+                let bestWeight = 0;
+                let bestReps = 0;
+
+                // Finde das höchste bewegte Gewicht aus dem aktuellen Training für die Historie
+                for(let i=1; i<=sets; i++) {
+                    const wVal = parseFloat(document.getElementById(`${ex.id}_w_${i}`).value) || 0;
+                    const rVal = parseInt(document.getElementById(`${ex.id}_r_${i}`).value) || 0;
+                    
+                    if(wVal > bestWeight || (wVal === bestWeight && rVal > bestReps)) {
+                        bestWeight = wVal;
+                        bestReps = rVal;
+                    }
+                }
+
+                if(bestWeight > 0 || bestReps > 0) {
+                    history[ex.id] = { weight: bestWeight, reps: bestReps, date: today };
+                }
+            });
+
+            localStorage.setItem('homegymHistory', JSON.stringify(history));
+            
+            // Toast Notification
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+            
+            // Neu rendern um aktuelle Bestleistungen sofort anzuzeigen
+            renderWorkout();
+        }
+    </script>
+</body>
+</html>
