@@ -1,7 +1,73 @@
-<!-- Firebase Integration als ES Module -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Homegym Tracker - Cloud Sync</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg-color: #121212; --card-bg: #1e1e1e; --primary: #bb86fc; --text-main: #ffffff; --text-muted: #a0a0a0; --success: #03dac6; }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 80px; }
+        h1, h2 { text-align: center; }
+        .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #333; color: white; }
+        .btn.active { background-color: var(--primary); color: #000; }
+        select { width: 100%; padding: 15px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--primary); border-radius: 8px; font-size: 16px; margin-bottom: 20px; appearance: none; }
+        .exercise-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .exercise-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: var(--primary); }
+        .exercise-target { font-size: 14px; color: var(--text-muted); margin-bottom: 15px; }
+        .last-workout { font-size: 13px; color: var(--success); margin-bottom: 10px; font-style: italic; }
+        .set-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .set-label { width: 50px; font-weight: bold; }
+        input[type="number"] { flex: 1; padding: 10px; background: var(--bg-color); border: 1px solid #333; color: var(--text-main); border-radius: 6px; font-size: 16px; }
+        .btn-save { width: 100%; padding: 15px; background-color: var(--success); color: #000; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        #history-section { display: none; }
+        .chart-container { position: relative; height: 300px; width: 100%; background: var(--card-bg); border-radius: 12px; padding: 10px; box-sizing: border-box; margin-bottom: 20px; }
+        .history-list { margin-top: 20px; }
+        .history-entry { background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
+        .history-date { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+        #toast { visibility: hidden; min-width: 250px; background-color: var(--success); color: #000; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 30px; font-weight: bold; transform: translateX(-50%); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+
+    <h1>Homegym Tracker</h1>
+    
+    <div class="nav-buttons">
+        <button id="btn-workout" class="btn active" onclick="window.switchTab('workout')">🏋️ Training</button>
+        <button id="btn-history" class="btn" onclick="window.switchTab('history')">📊 Fortschritt</button>
+    </div>
+
+    <!-- WORKOUT SECTION -->
+    <div id="workout-section">
+        <select id="workout-selector" onchange="window.renderWorkout()">
+            <option value="" disabled selected>Lade Daten aus Cloud...</option>
+            <option value="OK1">Oberkörper 1 (Brust & Dichte)</option>
+            <option value="UK1">Unterkörper 1 (Quads & Dehnung)</option>
+            <option value="OK2">Oberkörper 2 (Breite & Schultern)</option>
+            <option value="UK2">Unterkörper 2 (Beinrückseite)</option>
+        </select>
+        <div id="workout-container"></div>
+        <button id="save-btn" class="btn-save" style="display:none;" onclick="window.saveWorkout()">💾 Training Speichern</button>
+    </div>
+
+    <!-- HISTORY SECTION -->
+    <div id="history-section">
+        <select id="history-selector" onchange="window.renderHistory()">
+            <option value="" disabled selected>Übung für Analyse wählen...</option>
+        </select>
+        <div class="chart-container"><canvas id="progressChart"></canvas></div>
+        <div id="history-list-container" class="history-list"></div>
+    </div>
+
+    <div id="toast">Workout in Cloud gespeichert! 💪</div>
+
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCZaBxiXvtkoeUFjKkwlcIUihhHaIkTYAw",
@@ -15,9 +81,9 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const docRef = doc(db, "homegym", "historyData"); // Speicherort in der Cloud
+        const docRef = doc(db, "homegym", "historyData");
 
-        window.historyObj = {}; // Globale Variable für die Daten
+        window.historyObj = {};
         let chartInstance = null;
 
         const plans = {
@@ -27,7 +93,6 @@
             "UK2": [{ id: "uk2_1", name: "Rumänisches Kreuzheben", target: "4 Sätze x 8–10 Wdh." }, { id: "uk2_2", name: "Beinbeuger", target: "3 Sätze x 10–12 Wdh." }, { id: "uk2_3", name: "Ausfallschritte o. Kniebeugen", target: "3 Sätze x 10–12 Wdh." }, { id: "uk2_4", name: "Planks (Zusatzgewicht)", target: "3 Sätze x 45–60 Sek." }]
         };
 
-        // Lade Daten direkt beim Start aus der Cloud
         async function loadCloudData() {
             try {
                 const docSnap = await getDoc(docRef);
@@ -80,7 +145,7 @@
         window.saveWorkout = async function() {
             const selectedPlan = document.getElementById('workout-selector').value;
             const now = new Date();
-            const dateString = now.toLocaleDateString('de-CH') + ' ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+            const dateString = now.toLocaleDateString('de-CH') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 
             plans[selectedPlan].forEach(ex => {
                 const sets = parseInt(ex.target.charAt(0));
@@ -96,7 +161,6 @@
                 }
             });
 
-            // Speichere das gesamte Objekt in der Cloud
             await setDoc(docRef, window.historyObj);
             
             const toast = document.getElementById("toast");
@@ -129,19 +193,4 @@
             const weights = data.map(d => Math.max(...d.sets.map(s => s.w)));
 
             if(chartInstance) chartInstance.destroy();
-            const ctx = document.getElementById('progressChart').getContext('2d');
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: { labels: labels, datasets: [{ label: 'Max. Gewicht (kg)', data: weights, borderColor: '#bb86fc', backgroundColor: 'rgba(187, 134, 252, 0.2)', borderWidth: 3, pointBackgroundColor: '#03dac6', pointRadius: 5, fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#333' }, ticks: { color: '#a0a0a0' }}, x: { grid: { display: false }, ticks: { color: '#a0a0a0' }}}}
-            });
-
-            const container = document.getElementById('history-list-container');
-            container.innerHTML = '<h3>Letzte Einträge:</h3>';
-            for(let i = data.length - 1; i >= 0; i--) {
-                const session = data[i];
-                let setDetails = session.sets.map(s => `Satz ${s.set}: ${s.w}kg x ${s.r} Wdh`).join('<br>');
-                container.innerHTML += `<div class="history-entry"><div class="history-date">📅 ${session.date} Uhr</div><div>${setDetails}</div></div>`;
-            }
-        };
-    </script>
+            const ctx = document.getElementById('progress
