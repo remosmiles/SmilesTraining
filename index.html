@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Homegym Tracker - OK/UK Hypertrophie</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg-color: #121212;
@@ -12,6 +13,7 @@
             --text-main: #ffffff;
             --text-muted: #a0a0a0;
             --success: #03dac6;
+            --danger: #cf6679;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -22,6 +24,24 @@
             padding-bottom: 80px;
         }
         h1, h2 { text-align: center; }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+        }
+        .btn.active { background-color: var(--primary); color: #000; }
+        
         select {
             width: 100%;
             padding: 15px;
@@ -76,7 +96,7 @@
         .btn-save {
             width: 100%;
             padding: 15px;
-            background-color: var(--primary);
+            background-color: var(--success);
             color: #000;
             border: none;
             border-radius: 8px;
@@ -86,6 +106,29 @@
             margin-top: 20px;
         }
         .btn-save:active { opacity: 0.8; }
+        
+        /* History Section */
+        #history-section { display: none; }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        .history-list { margin-top: 20px; }
+        .history-entry {
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        .history-date { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+
         #toast {
             visibility: hidden;
             min-width: 250px;
@@ -95,7 +138,7 @@
             border-radius: 8px;
             padding: 16px;
             position: fixed;
-            z-index: 1;
+            z-index: 100;
             left: 50%;
             bottom: 30px;
             font-weight: bold;
@@ -110,17 +153,38 @@
 
     <h1>Homegym Tracker</h1>
     
-    <select id="workout-selector" onchange="renderWorkout()">
-        <option value="" disabled selected>Wähle dein Training...</option>
-        <option value="OK1">Oberkörper 1 (Brust & Dichte)</option>
-        <option value="UK1">Unterkörper 1 (Quads & Dehnung)</option>
-        <option value="OK2">Oberkörper 2 (Breite & Schultern)</option>
-        <option value="UK2">Unterkörper 2 (Beinrückseite)</option>
-    </select>
+    <div class="nav-buttons">
+        <button id="btn-workout" class="btn active" onclick="switchTab('workout')">🏋️ Training</button>
+        <button id="btn-history" class="btn" onclick="switchTab('history')">📊 Fortschritt</button>
+    </div>
 
-    <div id="workout-container"></div>
+    <!-- WORKOUT SECTION -->
+    <div id="workout-section">
+        <select id="workout-selector" onchange="renderWorkout()">
+            <option value="" disabled selected>Wähle dein Training...</option>
+            <option value="OK1">Oberkörper 1 (Brust & Dichte)</option>
+            <option value="UK1">Unterkörper 1 (Quads & Dehnung)</option>
+            <option value="OK2">Oberkörper 2 (Breite & Schultern)</option>
+            <option value="UK2">Unterkörper 2 (Beinrückseite)</option>
+        </select>
+        <div id="workout-container"></div>
+        <button id="save-btn" class="btn-save" style="display:none;" onclick="saveWorkout()">💾 Training Speichern</button>
+    </div>
 
-    <button id="save-btn" class="btn-save" style="display:none;" onclick="saveWorkout()">Training Speichern</button>
+    <!-- HISTORY SECTION -->
+    <div id="history-section">
+        <select id="history-selector" onchange="renderHistory()">
+            <option value="" disabled selected>Übung für Analyse wählen...</option>
+            <!-- Wird per JS befüllt -->
+        </select>
+        
+        <div class="chart-container">
+            <canvas id="progressChart"></canvas>
+        </div>
+
+        <div id="history-list-container" class="history-list"></div>
+    </div>
+
     <div id="toast">Workout gespeichert! 💪</div>
 
     <script>
@@ -141,7 +205,7 @@
             "OK2": [
                 { id: "ok2_1", name: "Klimmzüge (mit Gewicht)", target: "4 Sätze x 8–10 Wdh." },
                 { id: "ok2_2", name: "Schulterdrücken", target: "3 Sätze x 8–10 Wdh." },
-                { id: "ok2_3", name: "Langhantel-Bankdrücken o. Butterfly", target: "3 Sätze x 8–12 Wdh." },
+                { id: "ok2_3", name: "Bankdrücken o. Butterfly", target: "3 Sätze x 8–12 Wdh." },
                 { id: "ok2_4", name: "Dips (Körpergewicht)", target: "3 Sätze x AMRAP" },
                 { id: "ok2_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." }
             ],
@@ -153,8 +217,19 @@
             ]
         };
 
-        // Lade Historie aus LocalStorage
-        let history = JSON.parse(localStorage.getItem('homegymHistory')) || {};
+        // Lade Historie (Neue Struktur: Arrays für alle vergangenen Trainings)
+        let history = JSON.parse(localStorage.getItem('homegymHistoryV2')) || {};
+        let chartInstance = null;
+
+        function switchTab(tab) {
+            document.getElementById('workout-section').style.display = tab === 'workout' ? 'block' : 'none';
+            document.getElementById('history-section').style.display = tab === 'history' ? 'block' : 'none';
+            
+            document.getElementById('btn-workout').classList.toggle('active', tab === 'workout');
+            document.getElementById('btn-history').classList.toggle('active', tab === 'history');
+
+            if (tab === 'history') populateHistorySelector();
+        }
 
         function renderWorkout() {
             const selector = document.getElementById('workout-selector');
@@ -163,23 +238,22 @@
             const selectedPlan = selector.value;
             
             container.innerHTML = '';
-            
-            if (!selectedPlan) {
-                saveBtn.style.display = 'none';
-                return;
-            }
-
+            if (!selectedPlan) { saveBtn.style.display = 'none'; return; }
             saveBtn.style.display = 'block';
-            const exercises = plans[selectedPlan];
 
-            exercises.forEach(ex => {
+            plans[selectedPlan].forEach(ex => {
                 const sets = parseInt(ex.target.charAt(0)); 
                 let historyText = "Noch keine Daten. Setz einen Reiz!";
                 
-                // Letztes Training abrufen
-                if(history[ex.id]) {
-                    const last = history[ex.id];
-                    historyText = `Letztes Mal: ${last.weight} kg x ${last.reps} Wdh (am ${last.date})`;
+                // Letztes Training aus dem Array holen
+                if(history[ex.id] && history[ex.id].length > 0) {
+                    const lastSession = history[ex.id][history[ex.id].length - 1];
+                    // Bestes Gewicht der letzten Session finden
+                    let bestW = 0; let bestR = 0;
+                    lastSession.sets.forEach(s => {
+                        if(s.w > bestW || (s.w === bestW && s.r > bestR)) { bestW = s.w; bestR = s.r; }
+                    });
+                    historyText = `Letztes Mal: ${bestW} kg x ${bestR} Wdh (${lastSession.date})`;
                 }
 
                 let cardHTML = `
@@ -206,39 +280,134 @@
         function saveWorkout() {
             const selector = document.getElementById('workout-selector');
             const selectedPlan = selector.value;
-            const exercises = plans[selectedPlan];
-            const today = new Date().toLocaleDateString('de-CH');
+            const now = new Date();
+            const dateString = now.toLocaleDateString('de-CH') + ' ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
 
-            exercises.forEach(ex => {
+            plans[selectedPlan].forEach(ex => {
                 const sets = parseInt(ex.target.charAt(0));
-                let bestWeight = 0;
-                let bestReps = 0;
+                let sessionSets = [];
 
-                // Finde das höchste bewegte Gewicht aus dem aktuellen Training für die Historie
                 for(let i=1; i<=sets; i++) {
                     const wVal = parseFloat(document.getElementById(`${ex.id}_w_${i}`).value) || 0;
                     const rVal = parseInt(document.getElementById(`${ex.id}_r_${i}`).value) || 0;
-                    
-                    if(wVal > bestWeight || (wVal === bestWeight && rVal > bestReps)) {
-                        bestWeight = wVal;
-                        bestReps = rVal;
+                    if(wVal > 0 || rVal > 0) {
+                        sessionSets.push({ set: i, w: wVal, r: rVal });
                     }
                 }
 
-                if(bestWeight > 0 || bestReps > 0) {
-                    history[ex.id] = { weight: bestWeight, reps: bestReps, date: today };
+                if(sessionSets.length > 0) {
+                    if(!history[ex.id]) history[ex.id] = [];
+                    history[ex.id].push({ date: dateString, sets: sessionSets });
                 }
             });
 
-            localStorage.setItem('homegymHistory', JSON.stringify(history));
+            localStorage.setItem('homegymHistoryV2', JSON.stringify(history));
             
-            // Toast Notification
+            showToast("Workout gespeichert! 💪");
+            renderWorkout(); // Formular resetten & neue Bestleistung zeigen
+        }
+
+        function populateHistorySelector() {
+            const selector = document.getElementById('history-selector');
+            selector.innerHTML = '<option value="" disabled selected>Übung für Analyse wählen...</option>';
+            
+            // Sammle alle Übungen aus allen Plänen
+            let allExercises = [];
+            Object.values(plans).forEach(plan => {
+                plan.forEach(ex => allExercises.push(ex));
+            });
+
+            allExercises.forEach(ex => {
+                if(history[ex.id] && history[ex.id].length > 0) {
+                    selector.innerHTML += `<option value="${ex.id}">${ex.name}</option>`;
+                }
+            });
+        }
+
+        function renderHistory() {
+            const exId = document.getElementById('history-selector').value;
+            const data = history[exId];
+            if(!data) return;
+
+            // Finde den Namen der Übung für den Chart-Titel
+            let exName = "";
+            Object.values(plans).forEach(p => p.forEach(e => { if(e.id === exId) exName = e.name; }));
+
+            // Daten für Chart aufbereiten (Maximales Gewicht pro Trainingstag)
+            const labels = data.map(d => d.date.split(' ')[0]); // Nur Datum
+            const weights = data.map(d => {
+                return Math.max(...d.sets.map(s => s.w));
+            });
+
+            renderChart(labels, weights, exName);
+            renderHistoryList(data);
+        }
+
+        function renderChart(labels, dataPoints, title) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            if(chartInstance) {
+                chartInstance.destroy(); // Altes Diagramm löschen
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Max. Gewicht (kg)',
+                        data: dataPoints,
+                        borderColor: '#bb86fc',
+                        backgroundColor: 'rgba(187, 134, 252, 0.2)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#03dac6',
+                        pointRadius: 5,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            beginAtZero: false, 
+                            grid: { color: '#333' },
+                            ticks: { color: '#a0a0a0' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#a0a0a0' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderHistoryList(data) {
+            const container = document.getElementById('history-list-container');
+            container.innerHTML = '<h3>Letzte Einträge:</h3>';
+            
+            // Rückwärts durchlaufen, damit das Neueste oben steht
+            for(let i = data.length - 1; i >= 0; i--) {
+                const session = data[i];
+                let setDetails = session.sets.map(s => `Satz ${s.set}: ${s.w}kg x ${s.r} Wdh`).join('<br>');
+                
+                container.innerHTML += `
+                    <div class="history-entry">
+                        <div class="history-date">📅 Gespeichert am: ${session.date} Uhr</div>
+                        <div>${setDetails}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function showToast(msg) {
             const toast = document.getElementById("toast");
+            toast.innerText = msg;
             toast.className = "show";
-            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-            
-            // Neu rendern um aktuelle Bestleistungen sofort anzuzeigen
-            renderWorkout();
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
         }
     </script>
 </body>
