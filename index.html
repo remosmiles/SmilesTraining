@@ -3,29 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Homegym Tracker - Cloud Sync</title>
+    <title>Homegym Tracker - High Performance</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg-color: #121212; --card-bg: #1e1e1e; --primary: #bb86fc; --text-main: #ffffff; --text-muted: #a0a0a0; --success: #03dac6; }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 80px; }
+        :root { --bg-color: #121212; --card-bg: #1e1e1e; --primary: #bb86fc; --text-main: #ffffff; --text-muted: #a0a0a0; --success: #03dac6; --warning: #cf6679; }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 90px; }
         h1, h2 { text-align: center; }
         .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
         .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #333; color: white; }
         .btn.active { background-color: var(--primary); color: #000; }
-        select { width: 100%; padding: 15px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--primary); border-radius: 8px; font-size: 16px; margin-bottom: 20px; appearance: none; }
+        
+        select { width: 100%; padding: 15px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--primary); border-radius: 8px; font-size: 16px; margin-bottom: 15px; appearance: none; }
+        
         .exercise-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .exercise-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: var(--primary); }
-        .exercise-target { font-size: 14px; color: var(--text-muted); margin-bottom: 15px; }
+        .exercise-target { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; }
         .last-workout { font-size: 13px; color: var(--success); margin-bottom: 10px; font-style: italic; }
-        .set-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-        .set-label { width: 50px; font-weight: bold; }
-        input[type="number"] { flex: 1; padding: 10px; background: var(--bg-color); border: 1px solid #333; color: var(--text-main); border-radius: 6px; font-size: 16px; }
-        .btn-save { width: 100%; padding: 15px; background-color: var(--success); color: #000; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        
+        /* Notizen & Timer */
+        .ex-note { width: 100%; box-sizing: border-box; padding: 10px; background: var(--bg-color); border: 1px solid #444; color: white; border-radius: 6px; margin-bottom: 10px; font-family: inherit; resize: vertical; }
+        .timer-btns { display: flex; gap: 10px; margin-bottom: 15px; }
+        .timer-btn { flex: 1; padding: 8px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .timer-btn:active { background: var(--primary); color: black; }
+        
+        /* Eingabefelder */
+        .set-row { display: flex; gap: 5px; margin-bottom: 10px; align-items: center; }
+        .set-label { width: 45px; font-size: 14px; font-weight: bold; }
+        input[type="number"] { flex: 1; min-width: 0; padding: 10px 5px; background: var(--bg-color); border: 1px solid #333; color: var(--text-main); border-radius: 6px; font-size: 14px; text-align: center; }
+        
+        .btn-save { width: 100%; padding: 15px; background-color: var(--success); color: #000; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
+        /* Historie & Charts */
         #history-section { display: none; }
         .chart-container { position: relative; height: 300px; width: 100%; background: var(--card-bg); border-radius: 12px; padding: 10px; box-sizing: border-box; margin-bottom: 20px; }
         .history-list { margin-top: 20px; }
-        .history-entry { background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
+        .history-entry { background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--primary); font-size: 14px; }
         .history-date { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+        .badge-1rm { font-size: 11px; background: #333; color: var(--primary); padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+        
+        /* Timer Bar & Toast */
+        #timer-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--primary); color: #000; padding: 15px; text-align: center; font-weight: bold; font-size: 20px; z-index: 1000; display: none; box-shadow: 0 -2px 10px rgba(0,0,0,0.5); justify-content: center; align-items: center; gap: 20px; }
+        .timer-close { background: rgba(0,0,0,0.2); border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: bold; cursor: pointer; }
         #toast { visibility: hidden; min-width: 250px; background-color: var(--success); color: #000; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 30px; font-weight: bold; transform: translateX(-50%); }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
@@ -59,11 +77,21 @@
         <select id="history-selector">
             <option value="" disabled selected>Übung für Analyse wählen...</option>
         </select>
+        <select id="metric-selector" style="display:none; background:#333; border:none; margin-bottom:10px;">
+            <option value="max">📈 Maximales Gewicht</option>
+            <option value="vol">📦 Tonnage (Gesamtvolumen)</option>
+            <option value="1rm">💪 Geschätztes 1RM (Epley)</option>
+        </select>
         <div class="chart-container"><canvas id="progressChart"></canvas></div>
         <div id="history-list-container" class="history-list"></div>
     </div>
 
     <div id="toast">Workout gespeichert! 💪</div>
+    
+    <div id="timer-bar">
+        ⏳ Pause: <span id="timer-display"></span> 
+        <button class="timer-close" onclick="window.stopTimer()">X</button>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -82,6 +110,7 @@
         let app, db, docRef;
         let historyObj = {};
         let chartInstance = null;
+        let timerInterval = null;
 
         const plans = {
             "OK1": [{ id: "ok1_1", name: "Bankdrücken", target: "4 Sätze x 8–10 Wdh." }, { id: "ok1_2", name: "Klimmzüge (Zusatzgewicht)", target: "3 Sätze x 8–10 Wdh." }, { id: "ok1_3", name: "Dips (Zusatzgewicht)", target: "3 Sätze x 8–12 Wdh." }, { id: "ok1_4", name: "Vorgebeugtes Rudern", target: "3 Sätze x 8–12 Wdh." }, { id: "ok1_5", name: "Seitheben", target: "4 Sätze x 12–15 Wdh." }],
@@ -90,21 +119,20 @@
             "UK2": [{ id: "uk2_1", name: "Rumänisches Kreuzheben", target: "4 Sätze x 8–10 Wdh." }, { id: "uk2_2", name: "Beinbeuger", target: "3 Sätze x 10–12 Wdh." }, { id: "uk2_3", name: "Ausfallschritte o. Kniebeugen", target: "3 Sätze x 10–12 Wdh." }, { id: "uk2_4", name: "Planks (Zusatzgewicht)", target: "3 Sätze x 45–60 Sek." }]
         };
 
-        // Elemente laden
         const btnWorkout = document.getElementById('btn-workout');
         const btnHistory = document.getElementById('btn-history');
         const workoutSelector = document.getElementById('workout-selector');
         const historySelector = document.getElementById('history-selector');
+        const metricSelector = document.getElementById('metric-selector');
         const saveBtn = document.getElementById('save-btn');
         
-        // Event Listener (Sichere Klick-Erkennung)
         btnWorkout.addEventListener('click', () => switchTab('workout'));
         btnHistory.addEventListener('click', () => switchTab('history'));
         workoutSelector.addEventListener('change', renderWorkout);
         historySelector.addEventListener('change', renderHistory);
+        metricSelector.addEventListener('change', renderHistory);
         saveBtn.addEventListener('click', saveWorkout);
 
-        // Firebase Initialisierung
         try {
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
@@ -117,15 +145,37 @@
         async function loadCloudData() {
             try {
                 const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    historyObj = docSnap.data();
-                }
+                if (docSnap.exists()) historyObj = docSnap.data();
                 workoutSelector.options[0].text = "Wähle dein Training...";
             } catch(e) {
                 alert("Verbindungsfehler: " + e.message);
-                workoutSelector.options[0].text = "Fehler bei Verbindung!";
             }
         }
+
+        window.startTimer = function(seconds) {
+            clearInterval(timerInterval);
+            const tb = document.getElementById('timer-bar');
+            const td = document.getElementById('timer-display');
+            tb.style.display = 'flex';
+            let timeLeft = seconds;
+            td.innerText = Math.floor(timeLeft/60) + ":" + String(timeLeft%60).padStart(2, '0');
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                td.innerText = Math.floor(timeLeft/60) + ":" + String(timeLeft%60).padStart(2, '0');
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    tb.style.display = 'none';
+                    if(navigator.vibrate) navigator.vibrate([500, 200, 500]);
+                    alert("Pause beendet! Zeit für den nächsten Satz 💪");
+                }
+            }, 1000);
+        };
+
+        window.stopTimer = function() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-bar').style.display = 'none';
+        };
 
         function switchTab(tab) {
             document.getElementById('workout-section').style.display = tab === 'workout' ? 'block' : 'none';
@@ -133,6 +183,11 @@
             btnWorkout.classList.toggle('active', tab === 'workout');
             btnHistory.classList.toggle('active', tab === 'history');
             if (tab === 'history') populateHistorySelector();
+        }
+
+        function getCalculated1RM(weight, reps) {
+            if(reps === 0 || weight === 0) return 0;
+            return Math.round(weight * (1 + (reps / 30)));
         }
 
         function renderWorkout() {
@@ -144,18 +199,41 @@
 
             plans[selectedPlan].forEach(ex => {
                 const sets = parseInt(ex.target.charAt(0)); 
-                let historyText = "Noch keine Daten in der Cloud.";
+                let historyText = "Noch keine Daten.";
+                let latestNote = "";
                 
                 if(historyObj[ex.id] && historyObj[ex.id].length > 0) {
-                    const lastSession = historyObj[ex.id][historyObj[ex.id].length - 1];
+                    const sessionArr = historyObj[ex.id];
+                    const lastSession = sessionArr[sessionArr.length - 1];
                     let bestW = 0; let bestR = 0;
                     lastSession.sets.forEach(s => { if(s.w > bestW || (s.w === bestW && s.r > bestR)) { bestW = s.w; bestR = s.r; }});
-                    historyText = `Letztes Mal: ${bestW} kg x ${bestR} Wdh (${lastSession.date})`;
+                    historyText = `Letztes Mal: ${bestW} kg x ${bestR} Wdh`;
+                    
+                    // Finde letzte Notiz
+                    for(let i = sessionArr.length - 1; i >= 0; i--) {
+                        if(sessionArr[i].note) { latestNote = sessionArr[i].note; break; }
+                    }
                 }
 
-                let cardHTML = `<div class="exercise-card"><div class="exercise-title">${ex.name}</div><div class="exercise-target">Ziel: ${ex.target}</div><div class="last-workout">${historyText}</div>`;
+                let cardHTML = `
+                    <div class="exercise-card">
+                        <div class="exercise-title">${ex.name}</div>
+                        <div class="exercise-target">Ziel: ${ex.target} | <span class="last-workout">${historyText}</span></div>
+                        <textarea id="${ex.id}_note" class="ex-note" placeholder="Geräte-Setup / Notizen (z.B. Loch 14)...">${latestNote}</textarea>
+                        <div class="timer-btns">
+                            <button class="timer-btn" onclick="window.startTimer(90)">⏱ 90s Pause</button>
+                            <button class="timer-btn" onclick="window.startTimer(120)">⏱ 120s Pause</button>
+                        </div>
+                `;
+                
                 for(let i=1; i<=sets; i++) {
-                    cardHTML += `<div class="set-row"><span class="set-label">Satz ${i}</span><input type="number" step="0.5" id="${ex.id}_w_${i}" placeholder="Kg"><input type="number" id="${ex.id}_r_${i}" placeholder="Wdh"></div>`;
+                    cardHTML += `
+                        <div class="set-row">
+                            <span class="set-label">S. ${i}</span>
+                            <input type="number" step="0.5" id="${ex.id}_w_${i}" placeholder="Kg">
+                            <input type="number" id="${ex.id}_r_${i}" placeholder="Wdh">
+                            <input type="number" id="${ex.id}_rir_${i}" placeholder="RIR">
+                        </div>`;
                 }
                 cardHTML += `</div>`;
                 container.innerHTML += cardHTML;
@@ -171,14 +249,22 @@
             plans[selectedPlan].forEach(ex => {
                 const sets = parseInt(ex.target.charAt(0));
                 let sessionSets = [];
+                const noteVal = document.getElementById(`${ex.id}_note`).value;
+
                 for(let i=1; i<=sets; i++) {
                     const wVal = parseFloat(document.getElementById(`${ex.id}_w_${i}`).value) || 0;
                     const rVal = parseInt(document.getElementById(`${ex.id}_r_${i}`).value) || 0;
-                    if(wVal > 0 || rVal > 0) sessionSets.push({ set: i, w: wVal, r: rVal });
+                    const rirVal = document.getElementById(`${ex.id}_rir_${i}`).value; // Kann leer sein
+                    
+                    if(wVal > 0 || rVal > 0) {
+                        sessionSets.push({ set: i, w: wVal, r: rVal, rir: rirVal });
+                    }
                 }
-                if(sessionSets.length > 0) {
+                
+                if(sessionSets.length > 0 || noteVal !== "") {
                     if(!historyObj[ex.id]) historyObj[ex.id] = [];
-                    historyObj[ex.id].push({ date: dateString, sets: sessionSets });
+                    // Wir speichern das Training, falls Sätze da sind. Falls nur Notiz geändert, speichern wir trotzdem die Session ab.
+                    historyObj[ex.id].push({ date: dateString, sets: sessionSets, note: noteVal });
                 }
             });
 
@@ -187,9 +273,9 @@
                 const toast = document.getElementById("toast");
                 toast.className = "show";
                 setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-                renderWorkout();
+                renderWorkout(); // Formular resetten
             } catch(e) {
-                alert("Fehler beim Speichern in Cloud: " + e.message);
+                alert("Fehler beim Speichern: " + e.message);
             } finally {
                 saveBtn.innerText = "💾 Training Speichern";
             }
@@ -197,40 +283,81 @@
 
         function populateHistorySelector() {
             historySelector.innerHTML = '<option value="" disabled selected>Übung für Analyse wählen...</option>';
+            let hasData = false;
             Object.values(plans).forEach(plan => {
                 plan.forEach(ex => {
                     if(historyObj[ex.id] && historyObj[ex.id].length > 0) {
                         historySelector.innerHTML += `<option value="${ex.id}">${ex.name}</option>`;
+                        hasData = true;
                     }
                 });
             });
+            metricSelector.style.display = hasData ? 'block' : 'none';
         }
 
         function renderHistory() {
             const exId = historySelector.value;
+            const metric = metricSelector.value;
             const data = historyObj[exId];
             if(!data) return;
+
+            metricSelector.style.display = 'block';
 
             let exName = "";
             Object.values(plans).forEach(p => p.forEach(e => { if(e.id === exId) exName = e.name; }));
 
-            const labels = data.map(d => d.date.split(' ')[0]);
-            const weights = data.map(d => Math.max(...d.sets.map(s => s.w)));
+            const labels = [];
+            const dataPoints = [];
+
+            data.forEach(d => {
+                if(d.sets.length === 0) return; // Überspringe Sessions nur mit Notizen
+                labels.push(d.date.split(' ')[0]);
+                
+                if(metric === 'max') {
+                    dataPoints.push(Math.max(...d.sets.map(s => s.w)));
+                } else if(metric === 'vol') {
+                    let vol = 0;
+                    d.sets.forEach(s => vol += (s.w * s.r));
+                    dataPoints.push(vol);
+                } else if(metric === '1rm') {
+                    let best1RM = 0;
+                    d.sets.forEach(s => {
+                        let est = getCalculated1RM(s.w, s.r);
+                        if(est > best1RM) best1RM = est;
+                    });
+                    dataPoints.push(best1RM);
+                }
+            });
 
             if(chartInstance) chartInstance.destroy();
             const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            let labelText = metric === 'max' ? 'Max. Gewicht (kg)' : (metric === 'vol' ? 'Gesamtvolumen (kg)' : '1RM Epley (kg)');
+            let chartColor = metric === 'max' ? '#bb86fc' : (metric === 'vol' ? '#03dac6' : '#cf6679');
+            let bgChartColor = metric === 'max' ? 'rgba(187, 134, 252, 0.2)' : (metric === 'vol' ? 'rgba(3, 218, 198, 0.2)' : 'rgba(207, 102, 121, 0.2)');
+
             chartInstance = new Chart(ctx, {
                 type: 'line',
-                data: { labels: labels, datasets: [{ label: 'Max. Gewicht (kg)', data: weights, borderColor: '#bb86fc', backgroundColor: 'rgba(187, 134, 252, 0.2)', borderWidth: 3, pointBackgroundColor: '#03dac6', pointRadius: 5, fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#333' }, ticks: { color: '#a0a0a0' }}, x: { grid: { display: false }, ticks: { color: '#a0a0a0' }}}}
+                data: { labels: labels, datasets: [{ label: labelText, data: dataPoints, borderColor: chartColor, backgroundColor: bgChartColor, borderWidth: 3, pointBackgroundColor: '#fff', pointRadius: 4, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: {color: 'white'} } }, scales: { y: { grid: { color: '#333' }, ticks: { color: '#a0a0a0' }}, x: { grid: { display: false }, ticks: { color: '#a0a0a0' }}}}
             });
 
             const container = document.getElementById('history-list-container');
             container.innerHTML = '<h3>Letzte Einträge:</h3>';
+            
             for(let i = data.length - 1; i >= 0; i--) {
                 const session = data[i];
-                let setDetails = session.sets.map(s => `Satz ${s.set}: ${s.w}kg x ${s.r} Wdh`).join('<br>');
-                container.innerHTML += `<div class="history-entry"><div class="history-date">📅 ${session.date} Uhr</div><div>${setDetails}</div></div>`;
+                if(session.sets.length === 0 && !session.note) continue;
+                
+                let setDetails = session.sets.map(s => {
+                    let rirText = s.rir !== "" && s.rir !== undefined ? ` <span style="color:#a0a0a0;font-size:12px;">(RIR: ${s.rir})</span>` : "";
+                    let rmText = s.w > 0 && s.r > 0 ? `<span class="badge-1rm">1RM: ${getCalculated1RM(s.w, s.r)}kg</span>` : "";
+                    return `Satz ${s.set}: ${s.w}kg x ${s.r} Wdh${rirText} ${rmText}`;
+                }).join('<br>');
+                
+                let noteHtml = session.note ? `<div style="color:var(--primary); font-size:12px; margin-top:8px;">📝 Notiz: ${session.note}</div>` : "";
+                
+                container.innerHTML += `<div class="history-entry"><div class="history-date">📅 ${session.date} Uhr</div><div>${setDetails}</div>${noteHtml}</div>`;
             }
         }
     </script>
