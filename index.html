@@ -8,11 +8,20 @@
     <style>
         :root { --bg-color: #121212; --card-bg: #1e1e1e; --primary: #bb86fc; --text-main: #ffffff; --text-muted: #a0a0a0; --success: #03dac6; --warning: #cf6679; }
         body { font-family: -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; padding-bottom: 90px; }
-        h1, h2 { text-align: center; }
+        h1, h2 { text-align: center; margin-top: 0; }
         .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
         .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #333; color: white; }
         .btn.active { background-color: var(--primary); color: #000; }
         
+        /* Smart Coach Banner */
+        .coach-card { background: linear-gradient(135deg, #1e1e1e 0%, #2a2438 100%); border-left: 4px solid var(--success); border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .coach-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--success); font-weight: bold; margin-bottom: 6px; }
+        .coach-last { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+        .coach-rec { font-size: 16px; font-weight: bold; color: var(--text-main); margin-bottom: 12px; line-height: 1.4; }
+        .quick-log-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .q-btn { flex: 1; min-width: 90px; padding: 8px 6px; background: rgba(255,255,255,0.08); border: 1px solid #444; color: var(--text-main); border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; }
+        .q-btn:active { background: var(--success); color: #000; border-color: var(--success); }
+
         select { width: 100%; padding: 15px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--primary); border-radius: 8px; font-size: 16px; margin-bottom: 15px; appearance: none; }
         
         .exercise-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
@@ -61,6 +70,19 @@
 
     <!-- WORKOUT SECTION -->
     <div id="workout-section">
+        
+        <!-- SMART COACH BANNER -->
+        <div id="coach-card" class="coach-card">
+            <div class="coach-title">⚡ Smart Coach & Rotation</div>
+            <div id="coach-last" class="coach-last">Analysiere letzte Einheit...</div>
+            <div id="coach-rec" class="coach-rec">Bitte warten...</div>
+            <div class="quick-log-btns">
+                <button class="q-btn" onclick="window.logQuickSession('Laufen', '🏃 Lauf (Outdoor)')">🏃 Lauf erledigt</button>
+                <button class="q-btn" onclick="window.logQuickSession('Cardio', '🥊 Indoor-Cardio / Flow')">🥊 Indoor-Flow</button>
+                <button class="q-btn" onclick="window.logQuickSession('Grappling', '🥋 Grappling / Matte')">🥋 Grappling</button>
+            </div>
+        </div>
+
         <select id="workout-selector">
             <option value="" disabled selected>Lade Daten aus Cloud...</option>
             <option value="OK1">Oberkörper 1 (Brust & Dichte)</option>
@@ -86,7 +108,7 @@
         <div id="history-list-container" class="history-list"></div>
     </div>
 
-    <div id="toast">Workout gespeichert! 💪</div>
+    <div id="toast">Gespeichert! 💪</div>
     
     <div id="timer-bar">
         ⏳ Pause: <span id="timer-display"></span> 
@@ -111,6 +133,20 @@
         let historyObj = {};
         let chartInstance = null;
         let timerInterval = null;
+
+        const planNames = {
+            "OK1": "Oberkörper 1 (Brust & Dichte)",
+            "UK1": "Unterkörper 1 (Quads & Dehnung)",
+            "OK2": "Oberkörper 2 (Breite & Schultern)",
+            "UK2": "Unterkörper 2 (Beinrückseite)"
+        };
+
+        const nextLiftMap = {
+            "OK1": "UK1",
+            "UK1": "OK2",
+            "OK2": "UK2",
+            "UK2": "OK1"
+        };
 
         const plans = {
             "OK1": [
@@ -173,9 +209,138 @@
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) historyObj = docSnap.data();
                 workoutSelector.options[0].text = "Wähle dein Training...";
+                updateCoachBanner(true);
             } catch(e) {
                 alert("Verbindungsfehler: " + e.message);
             }
+        }
+
+        function parseSwissDate(dateStr) {
+            if(!dateStr) return 0;
+            try {
+                const parts = dateStr.split(' ');
+                const dParts = parts[0].split('.');
+                const tParts = parts[1] ? parts[1].split(':') : [0,0];
+                return new Date(dParts[2], dParts[1]-1, dParts[0], tParts[0], tParts[1]).getTime();
+            } catch(e) { return 0; }
+        }
+
+        // Ermittelt die letzte Kraft-Einheit (auch aus älteren Einträgen ohne Log)
+        function detectLastLift() {
+            let latestTime = 0;
+            let latestPlan = null;
+            let latestDateStr = "";
+
+            for (const [planKey, exList] of Object.entries(plans)) {
+                exList.forEach(ex => {
+                    if (historyObj[ex.id] && historyObj[ex.id].length > 0) {
+                        const lastEntry = historyObj[ex.id][historyObj[ex.id].length - 1];
+                        const t = parseSwissDate(lastEntry.date);
+                        if (t >= latestTime) {
+                            latestTime = t;
+                            latestPlan = planKey;
+                            latestDateStr = lastEntry.date;
+                        }
+                    }
+                });
+            }
+            return { plan: latestPlan, dateStr: latestDateStr, timestamp: latestTime };
+        }
+
+        function updateCoachBanner(autoSelectDropdown = false) {
+            const coachLast = document.getElementById('coach-last');
+            const coachRec = document.getElementById('coach-rec');
+
+            const liftInfo = detectLastLift();
+            let lastOverall = null;
+
+            if (historyObj._sessionLog && historyObj._sessionLog.length > 0) {
+                const lastLog = historyObj._sessionLog[historyObj._sessionLog.length - 1];
+                if (lastLog.timestamp >= liftInfo.timestamp) {
+                    lastOverall = lastLog;
+                }
+            }
+
+            if (!lastOverall && liftInfo.plan) {
+                lastOverall = {
+                    type: liftInfo.plan,
+                    label: planNames[liftInfo.plan],
+                    date: liftInfo.dateStr,
+                    timestamp: liftInfo.timestamp
+                };
+            }
+
+            if (!lastOverall) {
+                coachLast.innerText = "Noch keine Einheit getrackt.";
+                coachRec.innerHTML = "💡 Vorschlag für heute: Starte den Zyklus mit <b>Oberkörper 1 (OK1)</b>!";
+                if (autoSelectDropdown) {
+                    workoutSelector.value = "OK1";
+                    renderWorkout();
+                }
+                return;
+            }
+
+            const todayStr = new Date().toLocaleDateString('de-CH');
+            const lastDateOnly = lastOverall.date.split(' ')[0];
+            const isToday = (todayStr === lastDateOnly);
+
+            const nextLift = liftInfo.plan ? nextLiftMap[liftInfo.plan] : "OK1";
+            const nextLiftLabel = planNames[nextLift];
+
+            if (isToday) {
+                coachLast.innerHTML = `✅ Heute bereits absolviert: <b>${lastOverall.label}</b> (${lastOverall.date.split(' ')[1] || ''} Uhr)`;
+                coachRec.innerHTML = `🔥 Starke Arbeit! Fokus jetzt auf Regeneration & Protein. Nächster Kraft-Block im Zyklus: <b>${nextLift}</b>.`;
+                if (autoSelectDropdown && !workoutSelector.value) {
+                    workoutSelector.value = nextLift;
+                    renderWorkout();
+                }
+            } else {
+                coachLast.innerHTML = `⏮️ Letztes Training: <b>${lastOverall.label}</b> am ${lastDateOnly}`;
+                
+                let recHtml = "";
+                if (lastOverall.type === "OK1" || lastOverall.type === "OK2") {
+                    recHtml = `💡 <b>Vorschlag heute:</b> 🏃 <b>Laufen (Zone 2)</b>, 🥊 <b>Indoor-Flow</b> (Oberkörper schonen!) oder direkt vorziehen: 🏋️ <b>${nextLiftLabel}</b>.`;
+                } else if (lastOverall.type === "UK1" || lastOverall.type === "UK2") {
+                    recHtml = `💡 <b>Vorschlag heute:</b> 🏋️ <b>${nextLiftLabel}</b> (Beine erholen lassen) oder lockere 🥋 <b>Technik-Runde / Mobility</b>.`;
+                } else {
+                    // Letztes Training war Laufen, Cardio oder Grappling
+                    recHtml = `💡 <b>Vorschlag heute:</b> Zeit für schweres Eisen! Nächster Block: 🏋️ <b>${nextLiftLabel}</b>.`;
+                }
+                coachRec.innerHTML = recHtml;
+
+                if (autoSelectDropdown) {
+                    workoutSelector.value = nextLift;
+                    renderWorkout();
+                }
+            }
+        }
+
+        window.logQuickSession = async function(type, label) {
+            const now = new Date();
+            const dateString = now.toLocaleDateString('de-CH') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            
+            if (!historyObj._sessionLog) historyObj._sessionLog = [];
+            historyObj._sessionLog.push({
+                type: type,
+                label: label,
+                date: dateString,
+                timestamp: now.getTime()
+            });
+
+            try {
+                await setDoc(docRef, historyObj);
+                showToast(`${label} gespeichert! 💪`);
+                updateCoachBanner(false);
+            } catch(e) {
+                alert("Fehler beim Speichern: " + e.message);
+            }
+        };
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
         }
 
         window.startTimer = function(seconds) {
@@ -270,6 +435,7 @@
             const selectedPlan = workoutSelector.value;
             const now = new Date();
             const dateString = now.toLocaleDateString('de-CH') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            let anySaved = false;
 
             plans[selectedPlan].forEach(ex => {
                 const sets = parseInt(ex.target.charAt(0));
@@ -289,14 +455,24 @@
                 if(sessionSets.length > 0 || noteVal !== "") {
                     if(!historyObj[ex.id]) historyObj[ex.id] = [];
                     historyObj[ex.id].push({ date: dateString, sets: sessionSets, note: noteVal });
+                    anySaved = true;
                 }
             });
 
+            if (anySaved) {
+                if (!historyObj._sessionLog) historyObj._sessionLog = [];
+                historyObj._sessionLog.push({
+                    type: selectedPlan,
+                    label: planNames[selectedPlan],
+                    date: dateString,
+                    timestamp: now.getTime()
+                });
+            }
+
             try {
                 await setDoc(docRef, historyObj);
-                const toast = document.getElementById("toast");
-                toast.className = "show";
-                setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+                showToast("Workout gespeichert! 💪");
+                updateCoachBanner(false);
                 renderWorkout(); 
             } catch(e) {
                 alert("Fehler beim Speichern: " + e.message);
