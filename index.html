@@ -3,154 +3,509 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Homegym Tracker - High Performance</title>
+    <title>Homegym Tracker Pro — Ultimate Recomp & Hypertrophy</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { 
-            --bg-color: #121212; 
-            --card-bg: #1e1e1e; 
-            --primary: #bb86fc; 
-            --text-main: #ffffff; 
-            --text-muted: #a0a0a0; 
-            --success: #03dac6; 
-            --warning: #cf6679; 
-            --deload: #ffb74d; 
+        :root {
+            --bg-main: #090b10;
+            --bg-elevated: #121621;
+            --card-bg: rgba(22, 27, 40, 0.85);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #bb86fc;
+            --primary-dim: rgba(187, 134, 252, 0.15);
+            --accent: #03dac6;
+            --accent-dim: rgba(3, 218, 198, 0.15);
+            --warning: #ffb74d;
+            --danger: #cf6679;
+            --blue: #4fc3f7;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
         }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 20px; 
-            padding-bottom: 100px; 
-        }
-        h1, h2 { text-align: center; margin-top: 0; }
-        .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #333; color: white; transition: 0.2s; }
-        .btn.active { background-color: var(--primary); color: #000; }
-        
-        /* Smart Coach Banner */
-        .coach-card { background: linear-gradient(135deg, #1e1e1e 0%, #2a2438 100%); border-left: 4px solid var(--success); border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: all 0.3s ease; }
-        .coach-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 6px; flex-wrap: wrap; }
-        .coach-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--success); font-weight: bold; }
-        .badge-group { display: flex; gap: 6px; align-items: center; }
-        .cycle-badge { background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 12px; font-size: 11px; color: var(--text-main); font-weight: bold; }
-        .load-badge { background: rgba(3, 218, 198, 0.15); border: 1px solid var(--success); padding: 3px 8px; border-radius: 12px; font-size: 11px; color: var(--success); font-weight: bold; }
-        .coach-last { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4; }
-        .coach-rec { font-size: 15px; font-weight: bold; color: var(--text-main); margin-bottom: 12px; line-height: 1.4; }
-        .quick-log-btns { display: flex; gap: 6px; flex-wrap: wrap; }
-        .q-btn { flex: 1; min-width: 75px; padding: 9px 4px; background: rgba(255,255,255,0.08); border: 1px solid #444; color: var(--text-main); border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-align: center; transition: 0.2s; }
-        .q-btn:active, .q-btn.active-mode { background: var(--success); color: #000; border-color: var(--success); }
 
-        /* NEU: Modularer Konditions- & Cardio-Drawer */
-        #cond-modal { display: none; background: rgba(0,0,0,0.35); border: 1px solid #444; border-radius: 10px; padding: 12px; margin-top: 12px; }
-        .cond-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: var(--success); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+            background: radial-gradient(circle at top right, #1a162b 0%, var(--bg-main) 45%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            padding-bottom: 115px;
+            line-height: 1.45;
+        }
+
+        /* Header & Top Status */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding: 4px 2px;
+        }
+        .app-title-wrap h1 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(90deg, #fff, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.3px;
+        }
+        .app-subtitle { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+        .sync-pill {
+            font-size: 11px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: rgba(3, 218, 198, 0.12);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* 4-Tab Navigation */
+        .nav-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            background: var(--bg-elevated);
+            padding: 5px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 18px;
+            position: sticky;
+            top: 8px;
+            z-index: 900;
+            backdrop-filter: blur(12px);
+        }
+        .tab-btn {
+            padding: 10px 4px;
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        .tab-btn span.icon { font-size: 16px; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, #9b51e0 100%);
+            color: #000;
+            box-shadow: 0 4px 14px rgba(187, 134, 252, 0.35);
+        }
+
+        .tab-section { display: none; animation: fadeIn 0.25s ease; }
+        .tab-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Cards & Containers */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .card-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.9px;
+            color: var(--accent);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Smart Coach & Meso Banner */
+        .coach-card {
+            background: linear-gradient(145deg, #181c2c 0%, #231b35 100%);
+            border-left: 4px solid var(--accent);
+        }
+        .badge-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .badge {
+            padding: 4px 9px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .badge-cycle { background: rgba(255,255,255,0.1); color: #fff; }
+        .badge-load { background: var(--accent-dim); border: 1px solid var(--accent); color: var(--accent); }
+        .badge-caffeine { background: rgba(255, 183, 77, 0.15); border: 1px solid var(--warning); color: var(--warning); }
+
+        .coach-last { font-size: 12.5px; color: var(--text-muted); margin-bottom: 6px; }
+        .coach-rec { font-size: 14.5px; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
+        .meso-Banner-bar {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .quick-log-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .q-btn {
+            padding: 10px 4px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .q-btn:active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        /* Conditioning Drawer */
+        #cond-modal {
+            display: none;
+            background: rgba(0,0,0,0.45);
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+        }
         .cond-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
-        .cond-field { display: flex; flex-direction: column; gap: 3px; }
-        .cond-field label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
-        .cond-field input { padding: 8px 6px; background: var(--bg-color); border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 13px; text-align: center; }
-        .cond-actions { display: flex; gap: 8px; margin-top: 8px; }
-        .btn-cond-save { flex: 2; padding: 10px; background: var(--success); color: #000; border: none; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; }
-        .btn-cond-quick { flex: 1; padding: 10px; background: #333; color: #fff; border: 1px solid #555; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+        .field-box { display: flex; flex-direction: column; gap: 4px; }
+        .field-box label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+        input[type="number"], input[type="text"], select, textarea {
+            background: var(--bg-main);
+            border: 1px solid #33394b;
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 10px 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        input[type="number"], input[type="text"] { text-align: center; width: 100%; }
+        select {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--primary);
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
 
-        select { width: 100%; padding: 15px; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--primary); border-radius: 8px; font-size: 16px; margin-bottom: 12px; appearance: none; }
-        
-        /* NEU: Kraft-Toolbar (Quick-Copy + Session sRPE) */
-        .workout-toolbar { display: none; background: var(--card-bg); border: 1px solid #333; border-radius: 10px; padding: 12px; margin-bottom: 15px; }
-        .toolbar-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .btn-copy-last { width: 100%; padding: 10px 12px; background: rgba(187, 134, 252, 0.15); border: 1px solid var(--primary); color: var(--primary); border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-copy-last:active { background: var(--primary); color: #000; }
-        .srpe-bar { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--text-muted); border-top: 1px solid #2c2c2c; padding-top: 10px; }
-        .srpe-item { flex: 1; display: flex; align-items: center; gap: 6px; }
-        .srpe-item input { width: 55px; padding: 7px 4px; font-size: 13px; }
-        .srpe-live { font-weight: bold; color: var(--success); font-size: 12px; white-space: nowrap; }
+        /* Workout Toolbar */
+        .workout-toolbar { display: none; }
+        .toolbar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .btn-action {
+            padding: 10px 12px;
+            background: var(--primary-dim);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-action.accent { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+        .btn-action:active { opacity: 0.8; transform: scale(0.99); }
 
-        .exercise-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .exercise-header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
-        .exercise-title { font-size: 18px; font-weight: bold; color: var(--primary); }
-        .exercise-target { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; }
-        .last-workout { font-size: 13px; color: var(--success); margin-bottom: 10px; font-style: italic; }
-        
-        /* Notizen & Timer */
-        .ex-note { width: 100%; box-sizing: border-box; padding: 10px; background: var(--bg-color); border: 1px solid #444; color: white; border-radius: 6px; margin-bottom: 10px; font-family: inherit; resize: vertical; }
-        .timer-btns { display: flex; gap: 8px; margin-bottom: 15px; }
-        .timer-btn { flex: 1; padding: 8px 4px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; }
-        .timer-btn:active { background: var(--primary); color: black; }
-        
-        /* Eingabefelder */
-        .set-row { display: flex; gap: 5px; margin-bottom: 10px; align-items: center; }
-        .set-label { width: 45px; font-size: 14px; font-weight: bold; }
-        input[type="number"], input[type="text"] { flex: 1; min-width: 0; padding: 10px 5px; background: var(--bg-color); border: 1px solid #333; color: var(--text-main); border-radius: 6px; font-size: 14px; text-align: center; }
-        input.copied-flash { border-color: var(--success); background: rgba(3, 218, 198, 0.12); transition: 0.4s; }
-        
-        .btn-save { width: 100%; padding: 15px; background-color: var(--success); color: #000; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        /* Historie, Analytics & Charts */
-        #history-section { display: none; }
-        .overview-card { background: var(--card-bg); border-radius: 12px; padding: 14px; margin-bottom: 18px; border: 1px solid #2e2e2e; }
-        .overview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .overview-title { font-size: 14px; font-weight: bold; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
-        .period-toggle { display: flex; gap: 4px; background: #121212; padding: 3px; border-radius: 8px; }
-        .period-btn { border: none; background: transparent; color: var(--text-muted); font-size: 11px; font-weight: bold; padding: 5px 9px; border-radius: 6px; cursor: pointer; }
-        .period-btn.active { background: var(--primary); color: #000; }
-        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
-        .kpi-box { background: var(--bg-color); padding: 8px 4px; border-radius: 8px; text-align: center; border: 1px solid #292929; }
-        .kpi-val { font-size: 15px; font-weight: bold; color: #fff; }
+        .srpe-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--card-border);
+            padding-top: 10px;
+        }
+        .srpe-item { display: flex; align-items: center; gap: 6px; }
+        .srpe-item input { width: 58px; padding: 6px; }
+
+        /* Exercise Cards */
+        .exercise-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            transition: border 0.25s;
+        }
+        .exercise-card.bfr-active {
+            border-color: var(--danger);
+            background: linear-gradient(145deg, rgba(22,27,40,0.95) 0%, rgba(70,22,35,0.35) 100%);
+        }
+        .ex-top-bar { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+        .exercise-title { font-size: 17px; font-weight: 800; color: var(--primary); }
+        .ex-tools { display: flex; gap: 5px; flex-shrink: 0; }
+        .mini-tool-btn {
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: rgba(255,255,255,0.06);
+            color: var(--text-main);
+            cursor: pointer;
+        }
+        .mini-tool-btn.bfr-on { background: var(--danger); color: #000; border-color: var(--danger); }
+
+        .biomech-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+        .bio-tag {
+            font-size: 10.5px;
+            padding: 2px 7px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.06);
+            color: #d1d5db;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .bio-tag.stretch { color: var(--accent); border-color: rgba(3,218,198,0.35); background: rgba(3,218,198,0.08); }
+        .bio-tag.intens { color: var(--warning); border-color: rgba(255,183,77,0.35); background: rgba(255,183,77,0.08); }
+
+        .warmup-drawer {
+            display: none;
+            background: rgba(0,0,0,0.4);
+            border-left: 3px solid var(--warning);
+            padding: 9px 11px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .bfr-banner {
+            display: none;
+            background: rgba(207, 102, 121, 0.15);
+            border: 1px solid var(--danger);
+            color: #ffb3be;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 11.5px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .ex-note { width: 100%; margin-bottom: 10px; font-size: 12.5px; padding: 8px 10px; resize: vertical; min-height: 38px; }
+        .timer-btns { display: flex; gap: 6px; margin-bottom: 12px; }
+        .timer-btn {
+            flex: 1;
+            padding: 7px 4px;
+            background: #252b3d;
+            color: #e5e7eb;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11.5px;
+            font-weight: 600;
+        }
+        .timer-btn:active { background: var(--primary); color: #000; }
+
+        .set-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; }
+        .set-label { width: 58px; font-size: 12px; font-weight: 700; color: var(--text-muted); }
+        .set-label.last-set-lbl { color: var(--warning); }
+        input.copied-flash { border-color: var(--accent) !important; background: var(--accent-dim) !important; transition: 0.3s; }
+
+        .btn-save {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent) 0%, #00b4d8 100%);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(3, 218, 198, 0.3);
+        }
+
+        /* KPI & Analytics */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+        .kpi-box { background: var(--bg-main); padding: 10px 4px; border-radius: 10px; text-align: center; border: 1px solid var(--card-border); }
+        .kpi-val { font-size: 15px; font-weight: 800; color: #fff; }
         .kpi-lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-        .split-bar-wrap { height: 8px; background: #333; border-radius: 4px; overflow: hidden; display: flex; margin-top: 6px; }
-        .split-lift { background: var(--primary); height: 100%; transition: width 0.3s; }
-        .split-cond { background: var(--success); height: 100%; transition: width 0.3s; }
-        .split-legend { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 5px; }
 
-        .chart-container { position: relative; height: 300px; width: 100%; background: var(--card-bg); border-radius: 12px; padding: 10px; box-sizing: border-box; margin-bottom: 20px; }
-        .history-list { margin-top: 20px; }
-        .history-entry { background: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--primary); font-size: 14px; }
-        .history-date { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
-        .badge-1rm { font-size: 11px; background: #333; color: var(--primary); padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+        .split-bar-wrap { height: 8px; background: #262b3c; border-radius: 4px; overflow: hidden; display: flex; margin-top: 6px; }
+        .split-lift { background: var(--primary); height: 100%; transition: width 0.3s; }
+        .split-cond { background: var(--accent); height: 100%; transition: width 0.3s; }
+        .split-legend { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+        /* Volume Landmarks Bars (Bahadori / Israetel) */
+        .vol-row { margin-bottom: 10px; }
+        .vol-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; font-weight: 600; }
+        .vol-track { height: 8px; background: #1a1f2e; border-radius: 4px; overflow: hidden; position: relative; }
+        .vol-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+
+        /* Body Recomp & Water Tab */
+        .water-bottle-bar {
+            height: 22px;
+            background: #141926;
+            border-radius: 11px;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            overflow: hidden;
+            margin: 10px 0;
+            position: relative;
+        }
+        .water-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0288d1, var(--blue));
+            width: 0%;
+            transition: width 0.35s ease;
+        }
+        .water-text-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .macro-box-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+        .macro-pill-box {
+            background: var(--bg-main);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 10px 6px;
+            text-align: center;
+        }
+        .macro-grams { font-size: 17px; font-weight: 800; color: var(--accent); }
+        .macro-name { font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; }
+
+        /* Meso Evaluation Sliders */
+        .slider-row { margin-bottom: 12px; }
+        .slider-top { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; margin-bottom: 4px; }
+        input[type="range"] { width: 100%; accent-color: var(--primary); }
+
+        /* Charts & History Entries */
+        .chart-container { position: relative; height: 260px; width: 100%; background: var(--card-bg); border-radius: 12px; padding: 10px; margin-bottom: 16px; border: 1px solid var(--card-border); }
+        .history-entry { background: var(--card-bg); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--primary); font-size: 13.5px; border-top: 1px solid var(--card-border); border-right: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+        .history-date { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
+        .badge-1rm { font-size: 10.5px; background: #262c3f; color: var(--primary); padding: 2px 6px; border-radius: 4px; margin-left: 4px; }
         .badge-session-num { font-size: 10px; background: rgba(255,255,255,0.1); color: #fff; padding: 2px 6px; border-radius: 4px; }
-        .badge-srpe { font-size: 11px; background: rgba(3, 218, 198, 0.15); color: var(--success); padding: 2px 6px; border-radius: 4px; }
-        .diary-ex-block { margin-top: 8px; padding-top: 8px; border-top: 1px solid #333; }
-        .diary-ex-title { color: var(--primary); font-weight: bold; font-size: 14px; margin-bottom: 3px; }
+        .badge-srpe { font-size: 10.5px; background: var(--accent-dim); color: var(--accent); padding: 2px 6px; border-radius: 4px; }
+        .diary-ex-block { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .diary-ex-title { color: var(--primary); font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
         .cond-metrics-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-        .metric-pill { background: #121212; border: 1px solid #333; padding: 3px 8px; border-radius: 6px; font-size: 12px; color: #ddd; }
-        
-        /* Non-Blocking Timer Bar & Toast */
-        #timer-bar { position: fixed; bottom: 0; left: 0; width: 100%; box-sizing: border-box; background: var(--primary); color: #000; padding: 12px 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 1000; display: none; box-shadow: 0 -2px 10px rgba(0,0,0,0.5); justify-content: space-between; align-items: center; transition: background 0.3s; }
-        #timer-bar.timer-done { background: var(--success); animation: pulseBar 0.8s infinite alternate; }
-        @keyframes pulseBar { from { filter: brightness(1); } to { filter: brightness(1.25); } }
+        .metric-pill { background: var(--bg-main); border: 1px solid #333; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; color: #ddd; }
+
+        /* Timer Bar & Toast */
+        #timer-bar {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: linear-gradient(90deg, var(--primary), #9b51e0);
+            color: #000;
+            padding: 12px 16px;
+            font-weight: 800;
+            font-size: 16px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.6);
+            justify-content: space-between;
+            align-items: center;
+        }
+        #timer-bar.timer-done { background: var(--accent); animation: pulseBar 0.8s infinite alternate; }
+        @keyframes pulseBar { from { filter: brightness(1); } to { filter: brightness(1.2); } }
         .timer-controls { display: flex; gap: 6px; align-items: center; }
-        .timer-adj-btn { background: rgba(0,0,0,0.2); color: #000; border: none; border-radius: 6px; padding: 6px 10px; font-weight: bold; font-size: 13px; cursor: pointer; }
-        .timer-close { background: rgba(0,0,0,0.25); color: #000; border: none; border-radius: 50%; width: 32px; height: 32px; font-weight: bold; cursor: pointer; }
-        
-        #toast { visibility: hidden; min-width: 250px; background-color: var(--success); color: #000; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 1100; left: 50%; bottom: 30px; font-weight: bold; transform: translateX(-50%); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        .timer-adj-btn { background: rgba(0,0,0,0.2); color: #000; border: none; border-radius: 6px; padding: 6px 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
+        .timer-close { background: rgba(0,0,0,0.25); color: #000; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: 800; cursor: pointer; }
+
+        #toast {
+            visibility: hidden;
+            min-width: 260px;
+            max-width: 90%;
+            background-color: var(--accent);
+            color: #000;
+            text-align: center;
+            border-radius: 10px;
+            padding: 14px 18px;
+            position: fixed;
+            z-index: 1200;
+            left: 50%;
+            bottom: 30px;
+            font-weight: 800;
+            font-size: 13.5px;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+        #toast.show { visibility: visible; animation: fadein 0.35s, fadeout 0.35s 2.8s; }
+        @keyframes fadein { from {bottom: 10px; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 10px; opacity: 0;} }
     </style>
 </head>
 <body>
 
-    <h1>Homegym Tracker</h1>
-    
-    <div class="nav-buttons">
-        <button id="btn-workout" class="btn active">🏋️ Training</button>
-        <button id="btn-history" class="btn">📊 Fortschritt</button>
-    </div>
+    <header class="app-header">
+        <div class="app-title-wrap">
+            <h1>HOMEGYM TRACKER PRO</h1>
+            <div class="app-subtitle">Nippard × Trainingspedia • Hybrid Performance</div>
+        </div>
+        <div id="cloud-status" class="sync-pill">☁️ Cloud Sync</div>
+    </header>
 
-    <!-- WORKOUT SECTION -->
-    <div id="workout-section">
-        
-        <!-- SMART COACH BANNER -->
-        <div id="coach-card" class="coach-card">
-            <div class="coach-header">
-                <div id="coach-title" class="coach-title">⚡ Smart Coach & Rotation</div>
+    <!-- 4-TAB NAVIGATION -->
+    <nav class="nav-tabs">
+        <button id="tab-btn-workout" class="tab-btn active" onclick="window.switchTab('workout')">
+            <span class="icon">🏋️</span><span>Training</span>
+        </button>
+        <button id="tab-btn-body" class="tab-btn" onclick="window.switchTab('body')">
+            <span class="icon">⚖️</span><span>Recomp & H2O</span>
+        </button>
+        <button id="tab-btn-history" class="tab-btn" onclick="window.switchTab('history')">
+            <span class="icon">📊</span><span>Volumen & Log</span>
+        </button>
+        <button id="tab-btn-meso" class="tab-btn" onclick="window.switchTab('meso')">
+            <span class="icon">🧠</span><span>Meso-Coach</span>
+        </button>
+    </nav>
+
+    <!-- ==========================================
+         TAB 1: WORKOUT & SMART COACH
+    =========================================== -->
+    <section id="section-workout" class="tab-section active">
+
+        <div id="coach-card" class="glass-card coach-card">
+            <div class="card-header">
+                <div id="coach-title" class="card-title">⚡ Smart Coach & Zyklus-Steuerung</div>
                 <div class="badge-group">
-                    <div id="daily-load-badge" class="load-badge" title="Heutige Gesamtbelastung (Dauer × RPE)">Load heute: 0 AU</div>
-                    <div id="cycle-badge" class="cycle-badge">Zyklus 1 / 5</div>
+                    <div id="daily-load-badge" class="badge badge-load">Load: 0 AU</div>
+                    <div id="cycle-badge" class="badge badge-cycle">Woche 1 / 5</div>
                 </div>
             </div>
-            <div id="coach-last" class="coach-last">Analysiere letzte Einheit...</div>
-            <div id="coach-rec" class="coach-rec">Bitte warten...</div>
+
+            <div class="meso-Banner-bar">
+                <span id="meso-phase-text">🎯 <b>Phase:</b> Intro Week (RIR 2 Fokus)</span>
+                <span id="caffeine-rec-badge" class="badge badge-caffeine">☕ 0–100mg Koffein | Fokus: Technik</span>
+            </div>
+
+            <div id="coach-last" class="coach-last">Synchronisiere mit Cloud...</div>
+            <div id="coach-rec" class="coach-rec">Lade Trainingshistorie...</div>
+
             <div class="quick-log-btns">
                 <button class="q-btn" onclick="window.openCondModal('Laufen', '🏃 Lauf (Outdoor)')">🏃 Lauf</button>
                 <button class="q-btn" onclick="window.openCondModal('Cardio', '🥊 Indoor-Flow')">🥊 Flow</button>
@@ -158,87 +513,204 @@
                 <button class="q-btn" onclick="window.logQuickSession('Restday', '🛋️ Restday / Erholung')">🛋️ Restday</button>
             </div>
 
-            <!-- NEU: Modularer Konditions- & Ausdauer-Drawer (inkl. 1-Klick Schnell-Log) -->
+            <!-- Konditions-Drawer -->
             <div id="cond-modal">
-                <div class="cond-header">
-                    <span id="cond-modal-title">🏃 Einheit erfassen</span>
-                    <span id="cond-pace-live" style="font-size:12px; color:#fff;"></span>
+                <div class="card-header" style="margin-bottom:8px;">
+                    <span id="cond-modal-title" style="font-weight:800; color:var(--accent); font-size:13px;">🏃 Einheit erfassen</span>
+                    <span id="cond-pace-live" style="font-size:12px; color:#fff; font-weight:700;"></span>
                 </div>
                 <div class="cond-grid">
-                    <div class="cond-field">
+                    <div class="field-box">
                         <label>Dauer (Min)</label>
-                        <input type="number" id="cond-dur" placeholder="z.B. 45" oninput="window.updateCondLiveMetrics()">
+                        <input type="number" id="cond-dur" placeholder="45" oninput="window.updateCondLiveMetrics()">
                     </div>
-                    <div class="cond-field">
+                    <div class="field-box">
                         <label>RPE (1-10)</label>
-                        <input type="number" id="cond-rpe" min="1" max="10" placeholder="z.B. 7" oninput="window.updateCondLiveMetrics()">
+                        <input type="number" id="cond-rpe" min="1" max="10" placeholder="7" oninput="window.updateCondLiveMetrics()">
                     </div>
-                    <div class="cond-field">
+                    <div class="field-box">
                         <label>Distanz (km)</label>
                         <input type="number" step="0.01" id="cond-dist" placeholder="Optional" oninput="window.updateCondLiveMetrics()">
                     </div>
-                    <div class="cond-field">
+                    <div class="field-box">
                         <label>Höhenmeter</label>
                         <input type="number" id="cond-elev" placeholder="Hm">
                     </div>
-                    <div class="cond-field">
+                    <div class="field-box">
                         <label>Ø Puls / Zone</label>
                         <input type="text" id="cond-hr" placeholder="148 / Z2">
                     </div>
-                    <div class="cond-field">
+                    <div class="field-box">
                         <label>EMOM / Runden</label>
-                        <input type="text" id="cond-rounds" placeholder="z.B. 5x5m">
+                        <input type="text" id="cond-rounds" placeholder="5x5m">
                     </div>
                 </div>
-                <input type="text" id="cond-note" class="ex-note" style="margin-bottom:6px;" placeholder="Notiz zur Session (z.B. Trail, Intervalle, Sparring)...">
-                <div class="cond-actions">
-                    <button class="btn-cond-save" onclick="window.saveCondSession(false)">💾 Mit Details speichern</button>
-                    <button class="btn-cond-quick" onclick="window.saveCondSession(true)">⚡ Direkt-Log</button>
-                    <button class="btn-cond-quick" style="flex:0.4;" onclick="window.closeCondModal()">✕</button>
+                <input type="text" id="cond-note" class="ex-note" style="margin-bottom:8px;" placeholder="Notiz (z.B. Trail, Intervalle, Sparring, Technik)...">
+                <div style="display:flex; gap:6px;">
+                    <button class="btn-action accent" style="flex:2;" onclick="window.saveCondSession(false)">💾 Speichern</button>
+                    <button class="btn-action" style="flex:1;" onclick="window.saveCondSession(true)">⚡ Direkt</button>
+                    <button class="btn-action" style="flex:0.4; border-color:#555; color:#aaa;" onclick="window.closeCondModal()">✕</button>
                 </div>
             </div>
         </div>
 
         <select id="workout-selector">
-            <option value="" disabled selected>Lade Daten aus Cloud...</option>
-            <option value="OK1">Oberkörper 1 (Brust & Dichte)</option>
-            <option value="UK1">Unterkörper 1 (Quads & Dehnung)</option>
-            <option value="OK2">Oberkörper 2 (Breite & Schultern)</option>
-            <option value="UK2">Unterkörper 2 (Beinrückseite)</option>
+            <option value="" disabled selected>Lade Trainingspläne...</option>
+            <option value="OK1">Oberkörper 1 (Brust, Dichte & Stretch-Fokus)</option>
+            <option value="UK1">Unterkörper 1 (Quads, RDL & Dehnung)</option>
+            <option value="OK2">Oberkörper 2 (Lat-Breite, Schultern & Arme)</option>
+            <option value="UK2">Unterkörper 2 (Beinrückseite, Unilateral & Core)</option>
         </select>
 
-        <!-- NEU: Kraft-Toolbar (Quick-Copy + Session sRPE für Daily Load) -->
-        <div id="workout-toolbar" class="workout-toolbar">
-            <div class="toolbar-top">
-                <button type="button" class="btn-copy-last" onclick="window.copyLastWorkoutValues()">⚡ Letztes Training laden (Gewichte & Wdh. übernehmen)</button>
+        <!-- Kraft-Toolbar -->
+        <div id="workout-toolbar" class="glass-card workout-toolbar">
+            <div class="toolbar-grid">
+                <button type="button" class="btn-action" onclick="window.copyLastWorkoutValues()">⚡ Vorwerte laden</button>
+                <button type="button" class="btn-action accent" onclick="window.applyDeloadWeights()">📉 Deload (-50% Vol.)</button>
             </div>
             <div class="srpe-bar">
                 <div class="srpe-item">
-                    <span>⏱ Dauer (Min):</span>
+                    <span>⏱ Min:</span>
                     <input type="number" id="lift-duration" value="60" min="5" max="240" oninput="window.updateLiftSrpePreview()">
                 </div>
                 <div class="srpe-item">
-                    <span>🔥 RPE (1–10):</span>
+                    <span>🔥 RPE:</span>
                     <input type="number" id="lift-rpe" value="8" min="1" max="10" step="0.5" oninput="window.updateLiftSrpePreview()">
                 </div>
-                <div id="lift-srpe-preview" class="srpe-live">Load: 480 AU</div>
+                <div id="lift-srpe-preview" style="font-weight:800; color:var(--accent);">Load: 480 AU</div>
             </div>
         </div>
 
         <div id="workout-container"></div>
-        <button id="save-btn" class="btn-save" style="display:none;">💾 Training Speichern</button>
-    </div>
+        <button id="save-btn" class="btn-save" style="display:none;">💾 Training in Cloud speichern</button>
+    </section>
 
-    <!-- HISTORY SECTION -->
-    <div id="history-section">
-        
-        <!-- NEU: Kompakte Wochen- & Monatsübersicht (Kraft vs. Kondition, Volumen & Load) -->
-        <div class="overview-card">
-            <div class="overview-header">
-                <span class="overview-title">📊 Hybrid-Performance & Volumen</span>
-                <div class="period-toggle">
-                    <button id="period-7" class="period-btn active" onclick="window.setOverviewPeriod(7)">7 Tage</button>
-                    <button id="period-30" class="period-btn" onclick="window.setOverviewPeriod(30)">30 Tage</button>
+    <!-- ==========================================
+         TAB 2: RECOMP, GEWICHT & HYDRATION
+    =========================================== -->
+    <section id="section-body" class="tab-section">
+
+        <!-- Hydration & Elektrolyte -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span class="card-title" style="color:var(--blue);">💧 Performance Hydration & Elektrolyte</span>
+                <span id="water-goal-badge" class="badge" style="background:rgba(79,195,247,0.15); color:var(--blue);">Ziel: 3200 ml</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-muted);">
+                Schon 3 % Dehydration senken Maximalkraft, Satzvolumen & Regeneration signifikant (Nippard Kap. 11 / Trainingspedia Pro).
+            </div>
+            <div class="water-bottle-bar">
+                <div id="water-fill-bar" class="water-fill"></div>
+                <div id="water-text-overlay" class="water-text-overlay">0 / 3200 ml (0%)</div>
+            </div>
+            <div class="quick-log-btns" style="margin-top:8px;">
+                <button class="q-btn" onclick="window.addWater(250)">+250 ml</button>
+                <button class="q-btn" onclick="window.addWater(500)">+500 ml</button>
+                <button class="q-btn" onclick="window.addWater(750)">+750 ml Shake</button>
+                <button class="q-btn" id="elec-btn" onclick="window.toggleElectrolytes()">⚡ Elektrolyte</button>
+            </div>
+        </div>
+
+        <!-- Körpergewicht, KFA & Bauchumfang (7-Tage Durchschnitt) -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span class="card-title">⚖️ Body Recomp Tracker (7-Tage-Schnitt)</span>
+                <span id="recomp-status-badge" class="badge badge-load">Analysiere Trend...</span>
+            </div>
+            <div class="cond-grid">
+                <div class="field-box">
+                    <label>Gewicht (kg)</label>
+                    <input type="number" step="0.1" id="body-weight-input" placeholder="83.5" oninput="window.updateNutritionEngine()">
+                </div>
+                <div class="field-box">
+                    <label>KFA (%) geschätzt</label>
+                    <input type="number" step="0.5" id="body-bf-input" placeholder="14.0" oninput="window.updateNutritionEngine()">
+                </div>
+                <div class="field-box">
+                    <label>Bauchumfang (cm)</label>
+                    <input type="number" step="0.5" id="body-waist-input" placeholder="82.0">
+                </div>
+            </div>
+            <button class="btn-action accent" style="width:100%; margin-bottom:12px;" onclick="window.saveBodyMetrics()">📌 Heutigen Messwert speichern</button>
+
+            <div class="kpi-grid">
+                <div class="kpi-box">
+                    <div id="kpi-avg-weight" class="kpi-val">-- kg</div>
+                    <div class="kpi-lbl">7-Tage Ø</div>
+                </div>
+                <div class="kpi-box">
+                    <div id="kpi-weight-delta" class="kpi-val">--</div>
+                    <div class="kpi-lbl">Trend (vs. Vorw.)</div>
+                </div>
+                <div class="kpi-box">
+                    <div id="kpi-lbm" class="kpi-val">-- kg</div>
+                    <div class="kpi-lbl">Fettfreie Masse</div>
+                </div>
+                <div class="kpi-box">
+                    <div id="kpi-waist-latest" class="kpi-val">-- cm</div>
+                    <div class="kpi-lbl">Bauchumfang</div>
+                </div>
+            </div>
+            <div class="chart-container" style="height:210px; margin-bottom:6px;">
+                <canvas id="weightChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Nippard Recomp Nutrition & Peri-Workout Engine -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span class="card-title">🥩 Smart Recomp Makro- & Peri-Workout-Rechner</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+                <div class="field-box">
+                    <label>Primäres Ziel (Kap. 5)</label>
+                    <select id="nutri-goal" style="margin-bottom:0; padding:10px;" onchange="window.updateNutritionEngine()">
+                        <option value="leanbulk" selected>Lean Bulk (+10% Kcal)</option>
+                        <option value="recomp">Recomp Erhalt (±0%)</option>
+                        <option value="cut">Mini-Cut / Defizit (-15%)</option>
+                    </select>
+                </div>
+                <div class="field-box">
+                    <label>Tagestyp (Carb Cycling)</label>
+                    <select id="nutri-daytype" style="margin-bottom:0; padding:10px;" onchange="window.updateNutritionEngine()">
+                        <option value="train" selected>🔥 Trainingstag (High Carb)</option>
+                        <option value="rest">🛋️ Restday (-20% Carbs)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="macro-box-grid">
+                <div class="macro-pill-box">
+                    <div id="macro-kcal" class="macro-grams">2850</div>
+                    <div class="macro-name">Kalorien (kcal)</div>
+                </div>
+                <div class="macro-pill-box">
+                    <div id="macro-pro" class="macro-grams">195 g</div>
+                    <div class="macro-name">Protein (LBM-Modell)</div>
+                </div>
+                <div class="macro-pill-box">
+                    <div id="macro-carb-fat" class="macro-grams">340C / 75F</div>
+                    <div class="macro-name">Carbs / Fett</div>
+                </div>
+            </div>
+
+            <div id="peri-workout-box" style="margin-top:12px; background:rgba(0,0,0,0.35); border-radius:10px; padding:10px; font-size:12px; color:#d1d5db; line-height:1.5;">
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 3: VOLUMEN LANDMARKS & HISTORIE
+    =========================================== -->
+    <section id="section-history" class="tab-section">
+
+        <!-- Hybrid KPIs -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span class="card-title">📊 Hybrid-Performance & Volumen</span>
+                <div style="display:flex; gap:4px; background:#090b10; padding:3px; border-radius:8px;">
+                    <button id="period-7" class="mini-tool-btn" style="background:var(--primary); color:#000;" onclick="window.setOverviewPeriod(7)">7 Tage</button>
+                    <button id="period-30" class="mini-tool-btn" onclick="window.setOverviewPeriod(30)">30 Tage</button>
                 </div>
             </div>
             <div class="kpi-grid">
@@ -269,21 +741,89 @@
             </div>
         </div>
 
+        <!-- Wöchentliche Volumen-Landmarks (Trainingspedia MEV / MAV / MRV + 1/3 Überlappung) -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span class="card-title">🎯 Wöchentliches Satz-Volumen (inkl. 1/3-Überlappung)</span>
+                <span style="font-size:10.5px; color:var(--text-muted);">MEV ➔ MAV ➔ MRV</span>
+            </div>
+            <div id="volume-landmarks-container"></div>
+        </div>
+
         <select id="history-selector">
-            <option value="ALL_SESSIONS">📓 Komplettes Trainings-Tagebuch (Alle Pläne)</option>
+            <option value="ALL_SESSIONS">📓 Komplettes Trainings-Tagebuch (Alle Einheiten)</option>
         </select>
-        <select id="metric-selector" style="display:none; background:#333; border:none; margin-bottom:10px;">
-            <option value="max">📈 Maximales Gewicht</option>
-            <option value="vol">📦 Tonnage (Gesamtvolumen)</option>
-            <option value="1rm">💪 Geschätztes 1RM (Epley)</option>
+        <select id="metric-selector" style="display:none; margin-bottom:12px;">
+            <option value="1rm">💪 Geschätztes 1RM (Epley-Formel)</option>
+            <option value="max">📈 Maximales Arbeitsgewicht (kg)</option>
+            <option value="vol">📦 Tonnage / Übungs-Workload (kg)</option>
         </select>
         <div id="chart-box" class="chart-container" style="display:none;"><canvas id="progressChart"></canvas></div>
-        <div id="history-list-container" class="history-list"></div>
-    </div>
+        <div id="history-list-container"></div>
+    </section>
+
+    <!-- ==========================================
+         TAB 4: MESOZYKLUS EVALUATION & GUIDES
+    =========================================== -->
+    <section id="section-meso" class="tab-section">
+
+        <!-- Intra- & Post-Mesozyklus Evaluation (Trainingspedia Pro S. 14-22) -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span class="card-title">🧠 Intra-Mesozyklus Check-In (Trainingspedia Pro)</span>
+                <span class="badge badge-cycle">Skala 1 (Schlecht) – 5 (Top)</span>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:0;">
+                Bewerte deinen aktuellen Zustand im Vergleich zum Soll-Wert deiner aktuellen Zykluswoche, um zu prüfen, ob du Sätze hinzufügen (+1) oder streichen (-1) solltest.
+            </p>
+
+            <div class="slider-row">
+                <div class="slider-top"><span>😴 Schlafqualität & Erholung</span><span id="val-sleep">4 / 5</span></div>
+                <input type="range" min="1" max="5" value="4" id="sl-sleep" oninput="window.evaluateMesoState()">
+            </div>
+            <div class="slider-row">
+                <div class="slider-top"><span>🔥 Trainingsmotivation</span><span id="val-motiv">5 / 5</span></div>
+                <input type="range" min="1" max="5" value="5" id="sl-motiv" oninput="window.evaluateMesoState()">
+            </div>
+            <div class="slider-row">
+                <div class="slider-top"><span>⚡ Wahrgenommene Explosivität (Bar-Speed)</span><span id="val-speed">4 / 5</span></div>
+                <input type="range" min="1" max="5" value="4" id="sl-speed" oninput="window.evaluateMesoState()">
+            </div>
+            <div class="slider-row">
+                <div class="slider-top"><span>🦵 Muskelkater (1 = extrem, 5 = keiner/leicht)</span><span id="val-doms">4 / 5</span></div>
+                <input type="range" min="1" max="5" value="4" id="sl-doms" oninput="window.evaluateMesoState()">
+            </div>
+            <div class="slider-row">
+                <div class="slider-top"><span>🦴 Gelenke & Sehnen (1 = Schmerz, 5 = geschmeidig)</span><span id="val-joints">5 / 5</span></div>
+                <input type="range" min="1" max="5" value="5" id="sl-joints" oninput="window.evaluateMesoState()">
+            </div>
+
+            <div id="meso-eval-result" style="background:rgba(3,218,198,0.1); border-left:4px solid var(--accent); padding:12px; border-radius:8px; font-size:13px; margin-top:10px;">
+            </div>
+            <button class="btn-action accent" style="width:100%; margin-top:10px;" onclick="window.saveMesoCheckin()">💾 Check-In protokollieren</button>
+        </div>
+
+        <!-- Verletzungs- & Schmerz-Guide (Trainingspedia Pro S. 62) -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span class="card-title" style="color:var(--warning);">🛡️ Verletzungs- & Überlastungs-Protokoll</span>
+            </div>
+            <div style="font-size:12.5px; color:#d1d5db; line-height:1.55;">
+                Falls sich bei einer Übung ein Gelenk oder eine Sehne meldet, arbeite exakt diese 5-Stufen-Hierarchie ab (niemals gegen stechenden Schmerz trainieren!):
+                <ol style="padding-left:18px; margin:8px 0;">
+                    <li><b>Intensität senken & Tempo verlangsamen:</b> Reduziere das Gewicht um 10–15 %, nutze 3–4 Sek. Exzentrik und 1–2 Sek. Pause im Stretch (gleiche Auslastung bei geringerer Gelenklast).</li>
+                    <li><b>Griff / Winkel anpassen:</b> Neutralgriff statt Obergriff, Kurzhanteln statt Langhantel oder Ellbogen enger am Körper führen.</li>
+                    <li><b>Übung substituieren:</b> Wechsle sofort auf die in der Übungskarte hinterlegte schmerzfreie Alternative (z. B. Split Squats oder Step-Ups statt Kniebeugen).</li>
+                    <li><b>ROM einschränken:</b> Trainiere nur im schmerzfreien Teilbereich der Bewegung.</li>
+                    <li><b>BFR-Okklusions-Modus aktivieren:</b> Klicke in der Übungskarte auf <code>🩸 BFR</code> (20–30 % 1RM, 30-15-15-15 Wdh., 30s Pause) – maximaler Reiz bei fast null Gelenkbelastung!</li>
+                </ol>
+            </div>
+        </div>
+    </section>
 
     <div id="toast">Gespeichert! 💪</div>
-    
-    <!-- Verbesserter, nicht-blockierender Rest-Timer -->
+
+    <!-- Non-Blocking Rest Timer -->
     <div id="timer-bar">
         <div>⏳ <span id="timer-display">0:00</span></div>
         <div class="timer-controls">
@@ -310,16 +850,18 @@
         let app, db, docRef;
         let historyObj = {};
         let chartInstance = null;
+        let weightChartInstance = null;
         let timerInterval = null;
         let timerRemainingSeconds = 0;
         let overviewPeriodDays = 7;
         let pendingCondSession = { type: "", label: "" };
+        let bfrState = {};
 
         const planNames = {
-            "OK1": "Oberkörper 1 (Brust & Dichte)",
-            "UK1": "Unterkörper 1 (Quads & Dehnung)",
-            "OK2": "Oberkörper 2 (Breite & Schultern)",
-            "UK2": "Unterkörper 2 (Beinrückseite)"
+            "OK1": "Oberkörper 1 (Brust, Dichte & Stretch)",
+            "UK1": "Unterkörper 1 (Quads, RDL & Dehnung)",
+            "OK2": "Oberkörper 2 (Lat-Breite, Schultern & Arme)",
+            "UK2": "Unterkörper 2 (Beinrückseite, Unilateral & Core)"
         };
 
         const nextLiftMap = {
@@ -329,48 +871,259 @@
             "UK2": "OK1"
         };
 
-      const plans = {
+        // ULTIMATIVER PLAN: Nippard (Stretch/Partials/Early- vs. Last-Set RPE) x Bahadori (Anatomie, Pausen, Überlappung, Warmup)
+        const plans = {
             "OK1": [
-                { id: "ok1_1", name: "Bankdrücken (oder Low Incline DB Press)", target: "4 Sätze x 8–10 Wdh. | 2-3s Negativ | Letzter Satz: RPE 10 + 30s Pec Stretch" },
-                { id: "ok1_2", name: "Klimmzüge (Zusatzgewicht)", target: "3 Sätze x 8–10 Wdh. | Letzter Satz: Long-Length Partials" },
-                { id: "ok1_3", name: "Paused Dips (Zusatzgewicht)", target: "3 Sätze x 8–12 Wdh. | 1s Pause in der tiefsten Dehnung" },
-                { id: "ok1_4", name: "Chest-Supported DB Row", target: "3 Sätze x 8–12 Wdh. | RPE 9 | Schulterblätter hart kontrahieren" },
-                { id: "ok1_5", name: "Seitheben (Kurzhantel)", target: "4 Sätze x 12–15 Wdh. | Letzter Satz: Myo-Reps" },
-                { id: "ok1_6", name: "Incline DB Stretch-Curl", target: "3 Sätze x 10–12 Wdh. | 3s Negativ auf der Schrägbank" },
-                { id: "ok1_7", name: "Lying DB Skull Crusher", target: "3 Sätze x 10–12 Wdh. | 3-4s Negativ | Hanteln leicht hinter den Kopf führen" }
+                {
+                    id: "ok1_1",
+                    name: "Bankdrücken (oder Low Incline DB Press 15°)",
+                    target: "4 Sätze x 8–10 Wdh.",
+                    earlyRir: "1-2", lastRir: "0",
+                    cue: "2-3s Negativ | 1s Pause auf Brust | Letzter Satz: RIR 0 + 30s Pec-Stretch",
+                    sub: "15° Kurzhantel-Schrägbankdrücken",
+                    restRec: 180, warmupType: "heavy",
+                    primaryMuscle: "Brust", secondaryMuscles: ["Schulter (vordere)", "Trizeps"]
+                },
+                {
+                    id: "ok1_2",
+                    name: "Klimmzüge (Zusatzgewicht / Neutralgriff)",
+                    target: "3 Sätze x 8–10 Wdh.",
+                    earlyRir: "1-2", lastRir: "0",
+                    cue: "Voller Lat-Stretch unten | Letzter Satz: Long-Length Partials (untere Hälfte)",
+                    sub: "Band-Assisted Pull-Ups / Lat Prayer",
+                    restRec: 180, warmupType: "heavy",
+                    primaryMuscle: "Rücken", secondaryMuscles: ["Bizeps"]
+                },
+                {
+                    id: "ok1_3",
+                    name: "Paused Dips (Zusatzgewicht)",
+                    target: "3 Sätze x 8–12 Wdh.",
+                    earlyRir: "1-2", lastRir: "0",
+                    cue: "Leichte Vorlage | 2-3s Negativ + 1-2s Pause in tiefster Dehnung",
+                    sub: "Deficit Push-Ups (Hände erhöht)",
+                    restRec: 150, warmupType: "light",
+                    primaryMuscle: "Brust", secondaryMuscles: ["Trizeps", "Schulter (vordere)"]
+                },
+                {
+                    id: "ok1_4",
+                    name: "Chest-Supported DB Row (Brustgestützt)",
+                    target: "3 Sätze x 8–12 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Brust auf Schrägbank (kein Schwung!) | 45° Ellbogen | Letzter Satz: +4-6 Kelso Shrugs",
+                    sub: "Einarmiges Kurzhantelrudern abgestützt",
+                    restRec: 150, warmupType: "light",
+                    primaryMuscle: "Rücken", secondaryMuscles: ["Bizeps", "Schulter (mittlere/hintere)"]
+                },
+                {
+                    id: "ok1_5",
+                    name: "Seitheben (Kurzhantel / leicht nach vorn geneigt)",
+                    target: "4 Sätze x 12–15 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "In der Scapula-Ebene heben | Letzter Satz: Myo-Reps (5s Pause + 3-4 Wdh.)",
+                    sub: "Einarmiges Seitheben schräg angelehnt",
+                    restRec: 90, warmupType: "light",
+                    primaryMuscle: "Schulter (mittlere/hintere)", secondaryMuscles: []
+                },
+                {
+                    id: "ok1_6",
+                    name: "Incline DB Stretch-Curl (Schrägbank)",
+                    target: "3 Sätze x 10–12 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Arme hinter dem Torso für maximalen Bizeps-Stretch | 3s Negativ | Letzter Satz: Partials unten",
+                    sub: "Langhantel-Curls / TRX Bizeps-Curls",
+                    restRec: 90, warmupType: "light",
+                    primaryMuscle: "Bizeps", secondaryMuscles: []
+                },
+                {
+                    id: "ok1_7",
+                    name: "Nacken-Curls / Neck Extensions (Hantelscheibe)",
+                    target: "3 Sätze x 15–20 Wdh.",
+                    earlyRir: "1-2", lastRir: "0",
+                    cue: "Kontrollierte ROM für Kampfsport- & HWS-Stabilität | Kein Reißen",
+                    sub: "Isometrische Nacken-Holds",
+                    restRec: 60, warmupType: "light",
+                    primaryMuscle: "Nacken", secondaryMuscles: []
+                }
             ],
             "UK1": [
-                { id: "uk1_1", name: "Tiefe Kniebeugen", target: "4 Sätze x 6–8 Wdh. | 2-3s Negativ | Letzter Satz: RPE 10" },
-                { id: "uk1_2", name: "Paused RDLs", target: "3 Sätze x 8–10 Wdh. | RPE 7-8 | 1s Pause unten im Stretch" },
-                { id: "uk1_3", name: "Beinstrecker (oder Sissy Squats)", target: "3 Sätze x 10–12 Wdh. | Letzter Satz: Long-Length Partials + 30s Quad Stretch" },
-                { id: "uk1_4", name: "Wadenheben stehend", target: "4 Sätze x 10–12 Wdh. | 2s Pause im Stretch unten | Letzter Satz: 30s Waden-Stretch" }
+                {
+                    id: "uk1_1",
+                    name: "Tiefe Kniebeugen (High-Bar / Fersen leicht erhöht)",
+                    target: "4 Sätze x 6–10 Wdh.",
+                    earlyRir: "2", lastRir: "1",
+                    cue: "3s kontrollierte Negativphase | Maximale Knieflexion unten | Aufrechter Oberkörper",
+                    sub: "Bulgarian Split Squats (Kurzhanteln)",
+                    restRec: 210, warmupType: "heavy",
+                    primaryMuscle: "Quadriceps", secondaryMuscles: ["Gluteus"]
+                },
+                {
+                    id: "uk1_2",
+                    name: "Paused Rumänisches Kreuzheben (RDL)",
+                    target: "3 Sätze x 8–10 Wdh.",
+                    earlyRir: "2-3", lastRir: "2",
+                    cue: "ZNS-Schutz: RIR 2-3 lassen! | 1s Pause im tiefsten Hamstring-Stretch | Nur 75% hoch für Dauer-Spannung",
+                    sub: "Kurzhantel/Kettlebell Paused RDL",
+                    restRec: 180, warmupType: "heavy",
+                    primaryMuscle: "Beinbeuger", secondaryMuscles: ["Gluteus", "Rücken"]
+                },
+                {
+                    id: "uk1_3",
+                    name: "Beinstrecker (Rücklehne flach) o. Reverse Nordics",
+                    target: "3 Sätze x 10–12 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Hüfte gestreckt für Rectus Femoris Stretch! | 2-3s Negativ | Letzter Satz: Long-Length Partials + 30s Quad-Stretch",
+                    sub: "Sissy Squats (am Rack gehalten)",
+                    restRec: 120, warmupType: "light",
+                    primaryMuscle: "Quadriceps", secondaryMuscles: []
+                },
+                {
+                    id: "uk1_4",
+                    name: "Wadenheben stehend (Stufe / Langhantel o. DB)",
+                    target: "4 Sätze x 10–15 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "2s Pause in tiefster Dehnung unten (kein Federn!) | Letzter Satz: +30s statischer Waden-Stretch",
+                    sub: "DB Calf Jumps (explosiv)",
+                    restRec: 90, warmupType: "light",
+                    primaryMuscle: "Waden", secondaryMuscles: []
+                }
             ],
             "OK2": [
-                { id: "ok2_1", name: "DB Lat Pullover (Quer auf Bank)", target: "3 Sätze x 10–15 Wdh. | Fokus auf extremen Lat-Stretch" },
-                { id: "ok2_2", name: "Seated DB Shoulder Press", target: "3 Sätze x 8–10 Wdh. | 2-3s Negativ | Letzter Satz: RPE 10" },
-                { id: "ok2_3", name: "DB Flyes (Flach oder leicht schräg)", target: "3 Sätze x 12–15 Wdh. | Integrated Partials auf allen Sätzen" },
-                { id: "ok2_4", name: "Overhead Triceps Extension (DB/KB)", target: "3 Sätze x 10–12 Wdh. | Tiefer Stretch hinter dem Kopf" },
-                { id: "ok2_5", name: "Super-ROM DB Lateral Raise", target: "4 Sätze x 12–15 Wdh. | Bis ganz über den Kopf ziehen" },
-                { id: "ok2_6", name: "Hammer Curls", target: "3 Sätze x 10–12 Wdh. | Fester Griff mittig" },
-                { id: "ok2_7", name: "Chest-Supported Kelso Shrugs", target: "3 Sätze x 10–12 Wdh. | 2s Pause in der maximalen Kontraktion" }
+                {
+                    id: "ok2_1",
+                    name: "Klimmzüge (Breit o. Neutral) + DB Pullover Fokus",
+                    target: "4 Sätze x 8–10 Wdh.",
+                    earlyRir: "1-2", lastRir: "0",
+                    cue: "Ellbogen eng nach unten treiben | Letzter Satz: Long-Length Partials + 30s Lat-Hang-Stretch",
+                    sub: "Kurzhantel-Überzüge (DB Lat Pullover quer auf Bank)",
+                    restRec: 180, warmupType: "heavy",
+                    primaryMuscle: "Rücken", secondaryMuscles: ["Bizeps"]
+                },
+                {
+                    id: "ok2_2",
+                    name: "Schulterdrücken (Sitzend Kurzhantel o. Military Press)",
+                    target: "3 Sätze x 8–10 Wdh.",
+                    earlyRir: "1-2", lastRir: "0",
+                    cue: "Ellbogen unter 90° absenken für vollen Stretch | Saubere Kontrolle ohne Hohlkreuz",
+                    sub: "Standing DB Arnold Press",
+                    restRec: 180, warmupType: "heavy",
+                    primaryMuscle: "Schulter (vordere)", secondaryMuscles: ["Trizeps", "Schulter (mittlere/hintere)"]
+                },
+                {
+                    id: "ok2_3",
+                    name: "Butterfly o. Low-Incline DB Flyes (Integrated Partials)",
+                    target: "3 Sätze x 10–15 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Integrated Partials: Wechsle 1 volle Wdh. + 1 halbe Stretch-Wdh. unten ab für doppelte Stretch-Zeit!",
+                    sub: "Kurzhantel-Schrägbankdrücken",
+                    restRec: 120, warmupType: "light",
+                    primaryMuscle: "Brust", secondaryMuscles: ["Schulter (vordere)"]
+                },
+                {
+                    id: "ok2_4",
+                    name: "Paused Dips (Körpergewicht / Fokus Tiefe) o. Deficit Pushups",
+                    target: "3 Sätze x AMRAP",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "3s Negativphase + 1s Pause ganz unten im Stretch | Explosiv nach oben drücken",
+                    sub: "Close-Grip Bench Press / JM Press",
+                    restRec: 120, warmupType: "light",
+                    primaryMuscle: "Brust", secondaryMuscles: ["Trizeps"]
+                },
+                {
+                    id: "ok2_5",
+                    name: "Super-ROM Seitheben + Rear Delt Bent-Over Flyes",
+                    target: "4 Sätze x 12–15 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Sauber aus der seitlichen/hinteren Schulter führen | Letzter Satz: Dropset (-25% Gewicht)",
+                    sub: "TRX Face Pulls (1-2s Squeeze)",
+                    restRec: 90, warmupType: "light",
+                    primaryMuscle: "Schulter (mittlere/hintere)", secondaryMuscles: ["Nacken"]
+                },
+                {
+                    id: "ok2_6",
+                    name: "Overhead Trizeps-Extension (Kettlebell / Kurzhantel)",
+                    target: "3 Sätze x 10–12 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Maximaler Stretch des langen Trizepskopfes hinter dem Kopf | 1s Pause unten",
+                    sub: "Slow-Eccentric Skull Crushers (3-4s Negativ)",
+                    restRec: 90, warmupType: "light",
+                    primaryMuscle: "Trizeps", secondaryMuscles: []
+                },
+                {
+                    id: "ok2_7",
+                    name: "Paused Shrug-Ins (Schräg nach oben-innen) + Hammer Curls",
+                    target: "3 Sätze x 10–12 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Schultern Richtung Ohren/innen ziehen (2s Squeeze oben) | Hammer Curls im Supersatz für Brachialis",
+                    sub: "Langhantel-Shrugs + Zottman Curls",
+                    restRec: 90, warmupType: "light",
+                    primaryMuscle: "Nacken", secondaryMuscles: ["Bizeps"]
+                }
             ],
             "UK2": [
-                { id: "uk2_1", name: "Rumänisches Kreuzheben (RDLs)", target: "4 Sätze x 8–10 Wdh. | RPE 8 | 3s Negativ" },
-                { id: "uk2_2", name: "Beinbeuger (Liegend oder Nordic)", target: "3 Sätze x 8–10 Wdh. | Letzter Satz: Long-Length Partials" },
-                { id: "uk2_3", name: "DB Walking Lunges (oder Step-Ups)", target: "3 Sätze x 10–12 Wdh. | Fokus auf das vordere Bein" },
-                { id: "uk2_4", name: "Ab Wheel Rollout (oder Planks)", target: "3 Sätze x 10–15 Wdh. | Letzter Satz: Myo-Reps" }
+                {
+                    id: "uk2_1",
+                    name: "Rumänisches Kreuzheben (Schwer / Snatch- o. Normalgriff)",
+                    target: "4 Sätze x 8–10 Wdh.",
+                    earlyRir: "2", lastRir: "1-2",
+                    cue: "Hüfte maximal nach hinten schieben | 3s Negativ | Stange eng am Schienbein führen",
+                    sub: "Schwere Kettlebell/DB RDLs",
+                    restRec: 180, warmupType: "heavy",
+                    primaryMuscle: "Beinbeuger", secondaryMuscles: ["Gluteus", "Rücken"]
+                },
+                {
+                    id: "uk2_2",
+                    name: "Beinbeuger (Maschine / Liegend) o. Nordic Ham Curls",
+                    target: "3 Sätze x 10–12 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Hüfte fest ins Polster drücken | Letzter Satz: Long-Length Partials im unteren Drittel!",
+                    sub: "Sliding Leg Curls / TRX Hamstring Curls",
+                    restRec: 120, warmupType: "light",
+                    primaryMuscle: "Beinbeuger", secondaryMuscles: []
+                },
+                {
+                    id: "uk2_3",
+                    name: "DB Reverse Lunges o. Bulgarian Split Squats",
+                    target: "3 Sätze x 10–12 Wdh.",
+                    earlyRir: "1-2", lastRir: "1",
+                    cue: "Tiefer Stretch im vorderen Gluteus & Quad | Vorderes Bein drückt 95% der Last",
+                    sub: "Copenhagen Adduction + Goblet Squats",
+                    restRec: 150, warmupType: "heavy",
+                    primaryMuscle: "Gluteus", secondaryMuscles: ["Quadriceps"]
+                },
+                {
+                    id: "uk2_4",
+                    name: "LLPT Planks / Ab-Wheel Rollout / Hanging Leg Raise",
+                    target: "3 Sätze x 10–20 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Becken aktiv einrollen (Wirbelsäulenflexion für Rectus Abdominis!) + 2x 15s Stomach Vacuum",
+                    sub: "Weighted Crunches (Hantelscheibe)",
+                    restRec: 90, warmupType: "light",
+                    primaryMuscle: "Bauch", secondaryMuscles: []
+                }
             ]
         };
 
-        const btnWorkout = document.getElementById('btn-workout');
-        const btnHistory = document.getElementById('btn-history');
+        // Wöchentliche Satz-Landmarks nach Trainingspedia (S. 34, Dr. Mike Israetel)
+        const volumeLandmarks = {
+            "Brust": { mev: 10, mavMin: 12, mavMax: 20, mrv: 22 },
+            "Rücken": { mev: 10, mavMin: 14, mavMax: 22, mrv: 25 },
+            "Quadriceps": { mev: 8, mavMin: 12, mavMax: 18, mrv: 20 },
+            "Beinbeuger": { mev: 6, mavMin: 10, mavMax: 16, mrv: 20 },
+            "Schulter (mittlere/hintere)": { mev: 8, mavMin: 16, mavMax: 22, mrv: 26 },
+            "Schulter (vordere)": { mev: 0, mavMin: 6, mavMax: 8, mrv: 12 },
+            "Bizeps": { mev: 8, mavMin: 14, mavMax: 20, mrv: 26 },
+            "Trizeps": { mev: 6, mavMin: 10, mavMax: 14, mrv: 18 },
+            "Gluteus": { mev: 0, mavMin: 4, mavMax: 12, mrv: 16 },
+            "Waden": { mev: 8, mavMin: 12, mavMax: 16, mrv: 20 },
+            "Nacken": { mev: 0, mavMin: 6, mavMax: 12, mrv: 20 },
+            "Bauch": { mev: 0, mavMin: 6, mavMax: 16, mrv: 25 }
+        };
+
         const workoutSelector = document.getElementById('workout-selector');
         const historySelector = document.getElementById('history-selector');
         const metricSelector = document.getElementById('metric-selector');
         const saveBtn = document.getElementById('save-btn');
-        
-        btnWorkout.addEventListener('click', () => switchTab('workout'));
-        btnHistory.addEventListener('click', () => switchTab('history'));
+
         workoutSelector.addEventListener('change', renderWorkout);
         historySelector.addEventListener('change', renderHistory);
         metricSelector.addEventListener('change', renderHistory);
@@ -390,9 +1143,67 @@
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) historyObj = docSnap.data();
                 workoutSelector.options[0].text = "Wähle dein Training...";
+
+                // NEU: Automatischer Restday-Backfill für vergessene vergangene Tage
+                await autoBackfillMissedRestdays();
+
+                initBodyAndWaterUI();
                 updateCoachBanner(true);
+                window.evaluateMesoState();
             } catch(e) {
-                alert("Verbindungsfehler: " + e.message);
+                document.getElementById('cloud-status').innerText = "⚠️ Offline";
+                console.error("Verbindungsfehler:", e);
+            }
+        }
+
+        // AUTO-RESTDAY ENGINE: Prüft vergangene Kalendertage (nicht heute!) seit der letzten Einheit (max 14 Tage zurück)
+        async function autoBackfillMissedRestdays() {
+            const allSessions = getAllChronologicalSessions();
+            if (allSessions.length === 0) return;
+
+            const documentedDays = new Set();
+            allSessions.forEach(s => {
+                if (s.date) documentedDays.add(s.date.split(' ')[0]);
+            });
+
+            const todayMidnight = new Date();
+            todayMidnight.setHours(0, 0, 0, 0);
+
+            // Startpunkt: Letzter dokumentierter Tag (oder maximal 14 Tage rückwirkend)
+            const lastSessionTime = allSessions[allSessions.length - 1].timestamp;
+            const lastSessionDate = new Date(lastSessionTime);
+            lastSessionDate.setHours(0, 0, 0, 0);
+
+            const maxLookback = new Date(todayMidnight);
+            maxLookback.setDate(maxLookback.getDate() - 14);
+
+            let cursor = new Date(Math.max(lastSessionDate.getTime(), maxLookback.getTime()));
+            cursor.setDate(cursor.getDate() + 1); // Starte am Tag nach dem letzten Eintrag
+
+            if (!historyObj._sessionLog) historyObj._sessionLog = [];
+            let addedRestdays = 0;
+
+            while (cursor < todayMidnight) {
+                const dStr = cursor.toLocaleDateString('de-CH');
+                if (!documentedDays.has(dStr)) {
+                    const autoTs = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate(), 21, 0).getTime();
+                    historyObj._sessionLog.push({
+                        sessionId: autoTs,
+                        type: "Restday",
+                        label: "🛋️ Auto-Restday (Automatisch hinterlegt)",
+                        date: `${dStr} 21:00`,
+                        timestamp: autoTs,
+                        note: "Automatisch vom System als Erholungstag ergänzt."
+                    });
+                    documentedDays.add(dStr);
+                    addedRestdays++;
+                }
+                cursor.setDate(cursor.getDate() + 1);
+            }
+
+            if (addedRestdays > 0) {
+                await setDoc(docRef, historyObj);
+                showToast(`🛋️ ${addedRestdays} vergangene(r) Tag(e) automatisch als Restday hinterlegt!`);
             }
         }
 
@@ -406,19 +1217,17 @@
             } catch(e) { return 0; }
         }
 
-        // Berechnet sRPE Load einer Session (mit Fallback-Schätzung für ältere Einträge ohne explizites sRPE)
         function getSessionLoad(session) {
             if (session.type === "Restday") return 0;
             if (session.srpe && session.srpe > 0) return Math.round(session.srpe);
             if (session.duration && session.rpe) return Math.round(session.duration * session.rpe);
             if (["OK1", "UK1", "OK2", "UK2"].includes(session.type)) {
                 const setCnt = (session.exercises || []).reduce((acc, ex) => acc + (ex.sets ? ex.sets.length : 0), 0);
-                return setCnt > 0 ? setCnt * 22 : 400; // Realistischer Fallback (~400 AU für Kraft)
+                return setCnt > 0 ? setCnt * 22 : 400;
             }
-            return 300; // Standard-Fallback für ältere Quick-Logs
+            return 300;
         }
 
-        // UPGRADE: Multi-Session-kompatible Rekonstruktion aller Trainings (100 % abwärtskompatibel)
         function getAllChronologicalSessions() {
             let sessionMap = {};
             let logLookupById = {};
@@ -431,16 +1240,14 @@
                 });
             }
 
-            // 1. Kraft-Einheiten aus den Übungs-Arrays rekonstruieren
             for (const [planKey, exList] of Object.entries(plans)) {
                 exList.forEach(ex => {
                     if (historyObj[ex.id]) {
                         historyObj[ex.id].forEach(entry => {
-                            // Eindeutiger Schlüssel unterstützt mehrere Sessions pro Tag via sessionId oder Uhrzeit
                             const uniqueKey = entry.sessionId ? `${planKey}_id_${entry.sessionId}` : `${planKey}_${entry.date}`;
                             if (!sessionMap[uniqueKey]) {
-                                const matchedMeta = (entry.sessionId && logLookupById[entry.sessionId]) 
-                                    || (logLookupByTypeDate[planKey + "_" + entry.date] && logLookupByTypeDate[planKey + "_" + entry.date].log) 
+                                const matchedMeta = (entry.sessionId && logLookupById[entry.sessionId])
+                                    || (logLookupByTypeDate[planKey + "_" + entry.date] && logLookupByTypeDate[planKey + "_" + entry.date].log)
                                     || {};
                                 sessionMap[uniqueKey] = {
                                     sessionId: entry.sessionId || matchedMeta.sessionId || null,
@@ -465,12 +1272,11 @@
                 });
             }
 
-            // 2. Kondition, Grappling, Cardio & Restdays aus _sessionLog hinzufügen (Multi-Session-sicher)
             if (historyObj._sessionLog) {
                 historyObj._sessionLog.forEach((log, idx) => {
                     if (!["OK1", "UK1", "OK2", "UK2"].includes(log.type)) {
-                        const uniqueKey = log.sessionId 
-                            ? `${log.type}_id_${log.sessionId}` 
+                        const uniqueKey = log.sessionId
+                            ? `${log.type}_id_${log.sessionId}`
                             : `${log.type}_${log.date}_${log.timestamp || idx}`;
                         sessionMap[uniqueKey] = {
                             sessionId: log.sessionId || null,
@@ -495,7 +1301,6 @@
 
             const sorted = Object.values(sessionMap).sort((a, b) => a.timestamp - b.timestamp);
 
-            // Nummeriert Multi-Sessions am selben Kalendertag (Session 1, Session 2, ...)
             const dayCounts = {};
             sorted.forEach(s => {
                 const dayStr = s.date.split(' ')[0];
@@ -545,6 +1350,26 @@
             return streak;
         }
 
+        // Mesozyklus-Woche (1 bis 5) nach Trainingspedia Pro (Intro -> Akkumulation 1 -> Akkumulation 2 -> Overreaching -> Deload)
+        function getCurrentMesoInfo() {
+            const allSessions = getAllChronologicalSessions();
+            const liftSessions = allSessions.filter(s => ["OK1", "UK1", "OK2", "UK2"].includes(s.type));
+            const totalLifts = liftSessions.length;
+            const currentBlockIndex = Math.floor(totalLifts / 4); // 4 Lifts = 1 Mikrozyklus
+            const mesoWeek = (currentBlockIndex % 5) + 1; // 1..5
+            const cycleStep = (totalLifts % 4) + 1;
+
+            const phases = {
+                1: { name: "Woche 1: Intro Week", rir: "RIR 2 (Kein Muskelversagen)", caff: "☕ 0–100 mg Koffein | Fokus: Saubere Technik", isDeload: false },
+                2: { name: "Woche 2: Akkumulation 1 (MAV)", rir: "Early RIR 1-2 | Last RIR 0", caff: "☕ 100–150 mg Koffein | Fokus: Volumen", isDeload: false },
+                3: { name: "Woche 3: Akkumulation 2 (MAV+)", rir: "Early RIR 1 | Last RIR 0", caff: "☕ 150–200 mg Koffein | Fokus: Progression", isDeload: false },
+                4: { name: "Woche 4: Overreaching Peak (MRV)", rir: "RIR 0 + Stretch-Partials / Myo-Reps!", caff: "🔥 300–400 mg Koffein | Laute Musik & Vollgas!", isDeload: false },
+                5: { name: "Woche 5: DELOAD WEEK (-50% Vol.)", rir: "RIR 3-4 (Gelenke & ZNS erholen)", caff: "🌿 0 mg Koffein (Rezeptor-Reset) | Entspannt", isDeload: true }
+            };
+
+            return { mesoWeek, cycleStep, totalLifts, ...phases[mesoWeek] };
+        }
+
         function updateCoachBanner(autoSelectDropdown = false) {
             const coachCard = document.getElementById('coach-card');
             const coachTitle = document.getElementById('coach-title');
@@ -555,20 +1380,16 @@
 
             const allSessions = getAllChronologicalSessions();
             const liftSessions = allSessions.filter(s => ["OK1", "UK1", "OK2", "UK2"].includes(s.type));
-            
-            // Zyklus & Deload Berechnung
-            const totalLifts = liftSessions.length;
-            const currentCycle = Math.floor(totalLifts / 4) + 1;
-            const cycleStep = (totalLifts % 4) + 1;
-            const isDeloadWeek = (currentCycle > 1 && currentCycle % 6 === 0);
+            const meso = getCurrentMesoInfo();
 
-            if (isDeloadWeek) {
-                cycleBadge.innerText = `⚠️ DELOAD (${cycleStep}/4)`;
+            cycleBadge.innerText = `Meso W${meso.mesoWeek}/5 (Tag ${meso.cycleStep}/4)`;
+            document.getElementById('meso-phase-text').innerHTML = `🎯 <b>${meso.name}</b> • ${meso.rir}`;
+            document.getElementById('caffeine-rec-badge').innerText = meso.caff;
+
+            if (meso.isDeload) {
                 cycleBadge.style.background = "var(--warning)";
                 cycleBadge.style.color = "#000";
             } else {
-                const displayCycle = currentCycle % 6 === 0 ? 5 : (currentCycle % 6);
-                cycleBadge.innerText = `Zyklus ${displayCycle} / 5 (Tag ${cycleStep}/4)`;
                 cycleBadge.style.background = "rgba(255,255,255,0.1)";
                 cycleBadge.style.color = "#fff";
             }
@@ -577,21 +1398,7 @@
             const todaySessions = allSessions.filter(s => s.date.split(' ')[0] === todayStr);
             const todayLoad = todaySessions.reduce((sum, s) => sum + s.calculatedLoad, 0);
 
-            // Daily Load Badge aktualisieren
             loadBadge.innerText = `Load heute: ${todayLoad} AU`;
-            if (todayLoad > 650) {
-                loadBadge.style.borderColor = "var(--warning)";
-                loadBadge.style.color = "var(--warning)";
-                loadBadge.style.background = "rgba(207, 102, 121, 0.15)";
-            } else if (todayLoad > 400) {
-                loadBadge.style.borderColor = "var(--deload)";
-                loadBadge.style.color = "var(--deload)";
-                loadBadge.style.background = "rgba(255, 183, 77, 0.15)";
-            } else {
-                loadBadge.style.borderColor = "var(--success)";
-                loadBadge.style.color = "var(--success)";
-                loadBadge.style.background = "rgba(3, 218, 198, 0.15)";
-            }
 
             if (allSessions.length === 0) {
                 coachLast.innerText = "Noch keine Einheit getrackt.";
@@ -612,31 +1419,19 @@
             const nextLiftLabel = planNames[nextLift];
             const activeStreak = calculateActiveStreak(allSessions);
 
-            coachCard.style.borderLeftColor = "var(--success)";
-            coachTitle.style.color = "var(--success)";
-            coachTitle.innerText = "⚡ Smart Coach & Rotation";
-
             if (isToday) {
-                // Multi-Session Anzeige für heute
                 const todayListHtml = todaySessions.map((s, idx) => {
                     const timePart = s.date.split(' ')[1] || '';
-                    return `Session ${idx + 1} (${timePart}): <b>${s.label}</b>`;
+                    return `#${idx + 1} (${timePart}): <b>${s.label}</b>`;
                 }).join(' • ');
 
                 coachLast.innerHTML = `✅ Heute dokumentiert (${todaySessions.length}x): ${todayListHtml}`;
-                
-                const hasLiftToday = todaySessions.some(s => ["OK1", "UK1", "OK2", "UK2"].includes(s.type));
-                const hasCondToday = todaySessions.some(s => !["OK1", "UK1", "OK2", "UK2", "Restday"].includes(s.type));
-
                 if (todaySessions.some(s => s.type === 'Restday') && todaySessions.length === 1) {
-                    coachRec.innerHTML = `🔋 <b>Restday aktiv.</b> Gönn den Muskeln & dem ZNS die Pause! Morgen geht es weiter mit: <b>${nextLiftLabel}</b>.`;
+                    coachRec.innerHTML = `🔋 <b>Restday aktiv.</b> Superkompensation läuft! Morgen steht an: <b>${nextLiftLabel}</b>.`;
                 } else if (todayLoad > 650) {
-                    coachCard.style.borderLeftColor = "var(--warning)";
-                    coachRec.innerHTML = `🚨 <b>Hoher Daily Load (${todayLoad} AU)!</b> Starkes Pensum heute (${todaySessions.length} Sessions). Priorisiere jetzt Schlaf, Elektrolyte & Protein!`;
-                } else if (hasCondToday && !hasLiftToday) {
-                    coachRec.innerHTML = `🔥Session 1 im Kasten! Bereit für eine <b>2. Tages-Einheit (Hybrid-Split)</b>? Nächster Kraft-Block: <b>${nextLiftLabel}</b>.`;
+                    coachRec.innerHTML = `🚨 <b>Hoher Daily Load (${todayLoad} AU)!</b> Bei 2er-Einheiten jetzt schnelle Carbs + 40g Whey & Elektrolyte zuführen (Trainingspedia Pro S. 56)!`;
                 } else {
-                    coachRec.innerHTML = `🔥 Starke Arbeit heute! Fokus auf Regeneration oder optional lockeres <b>Zone-2 / Mobility</b> als 2. Session. Nächster Kraft-Block: <b>${nextLift}</b>.`;
+                    coachRec.innerHTML = `🔥 Starke Arbeit heute! Falls du einen <b>2-Einheiten-Tag</b> machst: Mind. 4h Pause einhalten. Nächster Kraft-Block: <b>${nextLiftLabel}</b>.`;
                 }
                 if (autoSelectDropdown && !workoutSelector.value) {
                     workoutSelector.value = nextLift;
@@ -647,26 +1442,18 @@
 
             coachLast.innerHTML = `⏮️ Letzter Eintrag: <b>${lastOverall.label}</b> am ${lastDateOnly} (Aktive Serie: ${activeStreak} Tage)`;
 
-            if (isDeloadWeek) {
+            if (meso.isDeload) {
                 coachCard.style.borderLeftColor = "var(--warning)";
-                coachTitle.style.color = "var(--warning)";
-                coachTitle.innerText = "🚨 DELOAD-WOCHE AKTIV (ZNS & Gelenke)";
-                coachRec.innerHTML = `Du hast 5 harte Zyklen voll! Reduziere diese Woche bei <b>${nextLiftLabel}</b> die Gewichte um <b>40–50%</b> (oder nutze leichtes BFR-Training) und lass 3–4 RIR im Tank!`;
+                coachTitle.innerText = "🚨 DELOAD-WOCHE AKTIV (Gelenke & Volumentoleranz)";
+                coachRec.innerHTML = `Woche 5 erreicht! Klicke unten in der Toolbar auf <b>"📉 Deload (-50% Vol.)"</b>, lass 3–4 RIR im Tank und verzichte auf Koffein, um deine Sehnen für den nächsten Block zu resensibilisieren.`;
             } else if (activeStreak >= 3) {
-                coachCard.style.borderLeftColor = "var(--deload)";
-                coachTitle.style.color = "var(--deload)";
-                coachTitle.innerText = "⚠️ ZNS-Check: Restday empfohlen";
-                coachRec.innerHTML = `Du hast <b>${activeStreak} Tage am Stück</b> durchgezogen! 💡 <b>Empfehlung heute:</b> Leg einen kompletten 🛋️ <b>Restday</b> (oder lockeres Spazieren/Mobility) ein, um Übertraining vorzubeugen. <br><span style="font-size:13px; color:#a0a0a0;">(Falls du topfit bist, steht als Nächstes <b>${nextLiftLabel}</b> an).</span>`;
+                coachCard.style.borderLeftColor = "var(--warning)";
+                coachTitle.innerText = "⚠️ Systemic MRV Check: Restday empfohlen";
+                coachRec.innerHTML = `Du hast <b>${activeStreak} Tage am Stück</b> trainiert! 💡 Empfehlung: Drücke auf 🛋️ <b>Restday</b> zum Abbau der kumulierten Erschöpfung (Fitness-Fatigue-Modell). Falls topfit: <b>${nextLiftLabel}</b>.`;
             } else {
-                let recHtml = "";
-                if (lastOverall.type === "OK1" || lastOverall.type === "OK2") {
-                    recHtml = `💡 <b>Vorschlag heute:</b> 🏃 <b>Laufen (Zone 2)</b>, 🥊 <b>Indoor-Flow</b> (Oberkörper schonen!) oder direkt vorziehen: 🏋️ <b>${nextLiftLabel}</b>.`;
-                } else if (lastOverall.type === "UK1" || lastOverall.type === "UK2") {
-                    recHtml = `💡 <b>Vorschlag heute:</b> 🏋️ <b>${nextLiftLabel}</b> (Beine erholen lassen) oder lockere 🥋 <b>Technik-Runde / Mobility</b>.`;
-                } else {
-                    recHtml = `💡 <b>Vorschlag heute:</b> Du bist erholt – Zeit für schweres Eisen! Nächster Block: 🏋️ <b>${nextLiftLabel}</b>.`;
-                }
-                coachRec.innerHTML = recHtml;
+                coachCard.style.borderLeftColor = "var(--accent)";
+                coachTitle.innerText = "⚡ Smart Coach & Zyklus-Steuerung";
+                coachRec.innerHTML = `💡 <b>Bereit für Progression:</b> Nächste geplante Kraft-Einheit ist 🏋️ <b>${nextLiftLabel}</b> (oder logge Lauf / Matte oben).`;
             }
 
             if (autoSelectDropdown) {
@@ -675,7 +1462,215 @@
             }
         }
 
-        // UPGRADE: Konditions- & Kampfsport-Drawer
+        // TAB SWITCHING
+        window.switchTab = function(tab) {
+            ['workout', 'body', 'history', 'meso'].forEach(t => {
+                document.getElementById(`section-${t}`).classList.toggle('active', t === tab);
+                document.getElementById(`tab-btn-${t}`).classList.toggle('active', t === tab);
+            });
+            if (tab === 'history') {
+                renderOverviewDashboard();
+                renderVolumeLandmarks();
+                populateHistorySelector();
+                renderHistory();
+            } else if (tab === 'body') {
+                renderBodyTab();
+            } else if (tab === 'meso') {
+                window.evaluateMesoState();
+            }
+        };
+
+        // WARM-UP CALCULATOR (Trainingspedia Pro S. 26)
+        window.toggleWarmup = function(exId, warmupType) {
+            const drawer = document.getElementById(`${exId}_warmup`);
+            if (drawer.style.display === 'block') {
+                drawer.style.display = 'none';
+                return;
+            }
+            const firstWeightInput = document.getElementById(`${exId}_w_1`);
+            let workingW = parseFloat(firstWeightInput && firstWeightInput.value) || 0;
+
+            if (!workingW && historyObj[exId] && historyObj[exId].length > 0) {
+                const lastSess = historyObj[exId][historyObj[exId].length - 1];
+                lastSess.sets.forEach(s => { if (s.w > workingW) workingW = s.w; });
+            }
+            if (!workingW) workingW = 60; // Default Richtwert
+
+            const round25 = (val) => Math.max(2.5, Math.round(val / 2.5) * 2.5);
+
+            if (warmupType === 'heavy') {
+                drawer.innerHTML = `
+                    <div style="font-weight:800; color:var(--warning); margin-bottom:4px;">🔥 Spezifisches 5-Stufen Warm-Up (Basis: ${workingW} kg Arbeitsgewicht):</div>
+                    <div>1️⃣ <b>${round25(workingW * 0.2)} kg × 10 Wdh.</b> (20%) • 2️⃣ <b>${round25(workingW * 0.4)} kg × 8 Wdh.</b> (40%)</div>
+                    <div>3️⃣ <b>${round25(workingW * 0.6)} kg × 6 Wdh.</b> (60%) • 4️⃣ <b>${round25(workingW * 0.8)} kg × 4 Wdh.</b> (80%)</div>
+                    <div>5️⃣ <b>${round25(workingW * 0.9)} kg × 1 Wdh.</b> (90% Potenzierung) ➔ <b>2-3 Min. Pause & Arbeitssatz!</b></div>
+                `;
+            } else {
+                drawer.innerHTML = `
+                    <div style="font-weight:800; color:var(--warning); margin-bottom:4px;">🔥 Spezifisches 3-Stufen Warm-Up (Basis: ${workingW} kg):</div>
+                    <div>1️⃣ <b>${round25(workingW * 0.3)} kg × 10 Wdh.</b> (30%) • 2️⃣ <b>${round25(workingW * 0.6)} kg × 7 Wdh.</b> (60%) • 3️⃣ <b>${round25(workingW * 0.9)} kg × 3 Wdh.</b> (90%)</div>
+                `;
+            }
+            drawer.style.display = 'block';
+        };
+
+        // BFR OCCLUSION MODE TOGGLE (Trainingspedia S. 76-83)
+        window.toggleBfrMode = function(exId) {
+            bfrState[exId] = !bfrState[exId];
+            const card = document.getElementById(`card_${exId}`);
+            const banner = document.getElementById(`bfr_banner_${exId}`);
+            const btn = document.getElementById(`bfr_btn_${exId}`);
+
+            card.classList.toggle('bfr-active', bfrState[exId]);
+            btn.classList.toggle('bfr-on', bfrState[exId]);
+            banner.style.display = bfrState[exId] ? 'block' : 'none';
+
+            if (bfrState[exId]) {
+                // Setze empfohlene BFR-Wiederholungen (30 - 15 - 15 - 15) und ~25% 1RM
+                let est1RM = 0;
+                if (historyObj[exId] && historyObj[exId].length > 0) {
+                    const lastSess = historyObj[exId][historyObj[exId].length - 1];
+                    lastSess.sets.forEach(s => {
+                        const rm = getCalculated1RM(s.w, s.r);
+                        if (rm > est1RM) est1RM = rm;
+                    });
+                }
+                const bfrWeight = est1RM > 0 ? Math.max(2.5, Math.round((est1RM * 0.25) / 2.5) * 2.5) : "";
+                const bfrReps = [30, 15, 15, 15];
+                for (let i = 1; i <= 4; i++) {
+                    const wEl = document.getElementById(`${exId}_w_${i}`);
+                    const rEl = document.getElementById(`${exId}_r_${i}`);
+                    const rirEl = document.getElementById(`${exId}_rir_${i}`);
+                    if (wEl && bfrWeight) wEl.value = bfrWeight;
+                    if (rEl) rEl.value = bfrReps[i - 1] || 15;
+                    if (rirEl) rirEl.value = i === 4 ? 0 : 1;
+                }
+                showToast("🩸 BFR-Okklusions-Protokoll aktiviert (30-15-15-15, 30s Pause)!");
+            }
+        };
+
+        // DELOAD HELPER (-50% Sätze oder Gewicht, RIR 3-4)
+        window.applyDeloadWeights = function() {
+            window.copyLastWorkoutValues();
+            const selectedPlan = workoutSelector.value;
+            if (!selectedPlan || !plans[selectedPlan]) return;
+
+            plans[selectedPlan].forEach(ex => {
+                const sets = parseInt(ex.target.charAt(0));
+                for (let i = 1; i <= sets; i++) {
+                    const rirEl = document.getElementById(`${exId_safe(ex.id)}_rir_${i}`);
+                    const rEl = document.getElementById(`${exId_safe(ex.id)}_r_${i}`);
+                    const wEl = document.getElementById(`${exId_safe(ex.id)}_w_${i}`);
+                    if (i > Math.ceil(sets / 2)) {
+                        // Halbiere die Satzanzahl (Volumen -50% bei erhaltenem Arbeitsgewicht = bester Wiedereinstieg laut Trainingspedia S. 59)
+                        if (wEl) wEl.value = "";
+                        if (rEl) rEl.value = "";
+                        if (rirEl) rirEl.value = "";
+                    } else if (rirEl) {
+                        rirEl.value = 4;
+                    }
+                }
+            });
+            document.getElementById('lift-rpe').value = 5.5;
+            window.updateLiftSrpePreview();
+            showToast("📉 Deload-Modus geladen: 50% Sätze bei gewohntem Gewicht & RIR 4!");
+        };
+
+        function exId_safe(id) { return id; }
+
+        function renderWorkout() {
+            const selectedPlan = workoutSelector.value;
+            const container = document.getElementById('workout-container');
+            const toolbar = document.getElementById('workout-toolbar');
+            container.innerHTML = '';
+            if (!selectedPlan) {
+                saveBtn.style.display = 'none';
+                toolbar.style.display = 'none';
+                return;
+            }
+            saveBtn.style.display = 'block';
+            toolbar.style.display = 'block';
+            window.updateLiftSrpePreview();
+
+            plans[selectedPlan].forEach(ex => {
+                const sets = parseInt(ex.target.charAt(0));
+                let historyText = "Noch keine Daten";
+                let latestNote = "";
+                let lastSetsInline = "";
+                let progSuggestion = "";
+
+                if (historyObj[ex.id] && historyObj[ex.id].length > 0) {
+                    const sessionArr = historyObj[ex.id];
+                    const lastSession = sessionArr[sessionArr.length - 1];
+                    let bestW = 0; let bestR = 0;
+                    lastSession.sets.forEach(s => { if(s.w > bestW || (s.w === bestW && s.r > bestR)) { bestW = s.w; bestR = s.r; }});
+                    historyText = `Top zuletzt: ${bestW} kg × ${bestR} (1RM: ${getCalculated1RM(bestW, bestR)} kg)`;
+                    lastSetsInline = lastSession.sets.map(s => `${s.w}×${s.r}${s.rir !== undefined && s.rir !== "" ? `@RIR${s.rir}` : ''}`).join(' | ');
+
+                    // Double Progression Check
+                    const repRangeMatch = ex.target.match(/(\d+)[–-](\d+)/);
+                    if (repRangeMatch && bestR >= parseInt(repRangeMatch[2])) {
+                        progSuggestion = `🚀 <b>Double Progression bereit:</b> Letztes Mal ${bestR} Wdh. erreicht ➔ Heute +2.5 kg (${bestW + 2.5} kg) anpeilen!`;
+                    } else if (bestW > 0) {
+                        progSuggestion = `🎯 <b>Ziel heute:</b> ${bestW} kg mit +1 sauberen Wdh. schlagen!`;
+                    }
+
+                    for(let i = sessionArr.length - 1; i >= 0; i--) {
+                        if(sessionArr[i].note) { latestNote = sessionArr[i].note; break; }
+                    }
+                }
+
+                let cardHTML = `
+                    <div id="card_${ex.id}" class="exercise-card">
+                        <div class="ex-top-bar">
+                            <div class="exercise-title">${ex.name}</div>
+                            <div class="ex-tools">
+                                <button type="button" class="mini-tool-btn" onclick="window.toggleWarmup('${ex.id}', '${ex.warmupType}')">🔥 Warm-up</button>
+                                <button type="button" id="bfr_btn_${ex.id}" class="mini-tool-btn" onclick="window.toggleBfrMode('${ex.id}')">🩸 BFR</button>
+                            </div>
+                        </div>
+
+                        <div class="biomech-tags">
+                            <span class="bio-tag">🎯 ${ex.target}</span>
+                            <span class="bio-tag stretch">🧬 ${ex.cue}</span>
+                            <span class="bio-tag intens">🔄 Alt: ${ex.sub}</span>
+                        </div>
+
+                        <div style="font-size:12.5px; color:var(--accent); margin-bottom:4px; font-weight:700;">${historyText}</div>
+                        ${lastSetsInline ? `<div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">Letzte Serie: ${lastSetsInline}</div>` : ''}
+                        ${progSuggestion ? `<div style="font-size:11.5px; color:var(--warning); margin-bottom:8px;">${progSuggestion}</div>` : ''}
+
+                        <div id="${ex.id}_warmup" class="warmup-drawer"></div>
+                        <div id="bfr_banner_${ex.id}" class="bfr-banner">
+                            🩸 <b>BFR-Okklusion aktiv:</b> Bandage ganz oben übereinander wickeln (Druck: Arme 6/10, Beine 7/10). 20–30% 1RM, Schema 30-15-15-15 Wdh., exakt 30s Satzpause! Bandage erst nach dem letzten Satz lösen.
+                        </div>
+
+                        <textarea id="${ex.id}_note" class="ex-note" placeholder="Setup / Notizen (z.B. Loch 14, Bankwinkel, Griff)...">${latestNote}</textarea>
+
+                        <div class="timer-btns">
+                            <button type="button" class="timer-btn" onclick="window.startTimer(30)">🩸 30s BFR</button>
+                            <button type="button" class="timer-btn" onclick="window.startTimer(90)">⏱ 90s Iso</button>
+                            <button type="button" class="timer-btn" onclick="window.startTimer(${ex.restRec || 180})">⏱ ${ex.restRec || 180}s Optimal</button>
+                        </div>
+                `;
+
+                for(let i = 1; i <= sets; i++) {
+                    const isLast = (i === sets);
+                    const rirPlaceholder = isLast ? `RIR ${ex.lastRir}` : `RIR ${ex.earlyRir}`;
+                    cardHTML += `
+                        <div class="set-row">
+                            <span class="set-label ${isLast ? 'last-set-lbl' : ''}">${isLast ? `🔥 S.${i}` : `Satz ${i}`}</span>
+                            <input type="number" step="0.5" id="${ex.id}_w_${i}" placeholder="Kg">
+                            <input type="number" id="${ex.id}_r_${i}" placeholder="Wdh">
+                            <input type="number" step="0.5" id="${ex.id}_rir_${i}" placeholder="${rirPlaceholder}">
+                        </div>`;
+                }
+                cardHTML += `</div>`;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        // KONDITIONS DRAWER
         window.openCondModal = function(type, label) {
             pendingCondSession = { type, label };
             const modal = document.getElementById('cond-modal');
@@ -745,7 +1740,7 @@
             const now = new Date();
             const sessionId = now.getTime();
             const dateString = now.toLocaleDateString('de-CH') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-            
+
             if (!historyObj._sessionLog) historyObj._sessionLog = [];
             historyObj._sessionLog.push({
                 sessionId: sessionId,
@@ -760,110 +1755,12 @@
                 await setDoc(docRef, historyObj);
                 showToast(`${label} dokumentiert! 💪`);
                 updateCoachBanner(false);
-                if (document.getElementById('history-section').style.display === 'block') {
-                    renderHistory();
-                }
+                initBodyAndWaterUI();
             } catch(e) {
                 alert("Fehler beim Speichern: " + e.message);
             }
         };
 
-        function showToast(msg) {
-            const toast = document.getElementById("toast");
-            toast.innerText = msg;
-            toast.className = "show";
-            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-        }
-
-        // UPGRADE: Synthetischer Beep über Web Audio API (kein blockierendes alert() mehr)
-        function playTimerBeep() {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                const ctx = new AudioCtx();
-                [0, 0.22, 0.44].forEach((offset, idx) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.value = idx === 2 ? 1046.5 : 880; // A5, A5, C6
-                    gain.gain.setValueAtTime(0.25, ctx.currentTime + offset);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.18);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(ctx.currentTime + offset);
-                    osc.stop(ctx.currentTime + offset + 0.19);
-                });
-            } catch(e) { /* Audio fallback silent */ }
-        }
-
-        function formatTimer(sec) {
-            const s = Math.max(0, sec);
-            return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, '0');
-        }
-
-        window.startTimer = function(seconds) {
-            clearInterval(timerInterval);
-            const tb = document.getElementById('timer-bar');
-            const td = document.getElementById('timer-display');
-            tb.classList.remove('timer-done');
-            tb.style.display = 'flex';
-            timerRemainingSeconds = seconds;
-            td.innerText = `Pause: ${formatTimer(timerRemainingSeconds)}`;
-            
-            timerInterval = setInterval(() => {
-                timerRemainingSeconds--;
-                if (timerRemainingSeconds > 0) {
-                    td.innerText = `Pause: ${formatTimer(timerRemainingSeconds)}`;
-                } else {
-                    clearInterval(timerInterval);
-                    tb.classList.add('timer-done');
-                    td.innerText = "🔥 Satzbereit! Weiter geht's!";
-                    if (navigator.vibrate) navigator.vibrate([300, 120, 300]);
-                    playTimerBeep();
-                    setTimeout(() => {
-                        if (tb.classList.contains('timer-done')) window.stopTimer();
-                    }, 5000);
-                }
-            }, 1000);
-        };
-
-        window.adjustTimer = function(deltaSeconds) {
-            timerRemainingSeconds = Math.max(5, timerRemainingSeconds + deltaSeconds);
-            const tb = document.getElementById('timer-bar');
-            tb.classList.remove('timer-done');
-            document.getElementById('timer-display').innerText = `Pause: ${formatTimer(timerRemainingSeconds)}`;
-        };
-
-        window.stopTimer = function() {
-            clearInterval(timerInterval);
-            const tb = document.getElementById('timer-bar');
-            tb.classList.remove('timer-done');
-            tb.style.display = 'none';
-        };
-
-        function switchTab(tab) {
-            document.getElementById('workout-section').style.display = tab === 'workout' ? 'block' : 'none';
-            document.getElementById('history-section').style.display = tab === 'history' ? 'block' : 'none';
-            btnWorkout.classList.toggle('active', tab === 'workout');
-            btnHistory.classList.toggle('active', tab === 'history');
-            if (tab === 'history') {
-                renderOverviewDashboard();
-                populateHistorySelector();
-                renderHistory();
-            }
-        }
-
-        function getCalculated1RM(weight, reps) {
-            if(reps === 0 || weight === 0) return 0;
-            return Math.round(weight * (1 + (reps / 30)));
-        }
-
-        window.updateLiftSrpePreview = function() {
-            const dur = parseFloat(document.getElementById('lift-duration').value) || 0;
-            const rpe = parseFloat(document.getElementById('lift-rpe').value) || 0;
-            document.getElementById('lift-srpe-preview').innerText = `Load: ${Math.round(dur * rpe)} AU`;
-        };
-
-        // UPGRADE: 1-Klick Quick-Copy des letzten identischen Trainings
         window.copyLastWorkoutValues = function() {
             const selectedPlan = workoutSelector.value;
             if (!selectedPlan || !plans[selectedPlan]) return;
@@ -898,76 +1795,10 @@
 
             setTimeout(() => {
                 document.querySelectorAll('.copied-flash').forEach(el => el.classList.remove('copied-flash'));
-            }, 900);
+            }, 800);
 
-            if (copiedCount > 0) {
-                showToast("⚡ Letzte Werte als Vorlage geladen!");
-            } else {
-                showToast("Noch keine Vorwerte für diesen Plan vorhanden.");
-            }
+            showToast(copiedCount > 0 ? "⚡ Vorwerte als Vorlage geladen!" : "Noch keine Vorwerte für diesen Plan.");
         };
-
-        function renderWorkout() {
-            const selectedPlan = workoutSelector.value;
-            const container = document.getElementById('workout-container');
-            const toolbar = document.getElementById('workout-toolbar');
-            container.innerHTML = '';
-            if (!selectedPlan) { 
-                saveBtn.style.display = 'none'; 
-                toolbar.style.display = 'none';
-                return; 
-            }
-            saveBtn.style.display = 'block';
-            toolbar.style.display = 'block';
-            window.updateLiftSrpePreview();
-
-            plans[selectedPlan].forEach(ex => {
-                const sets = parseInt(ex.target.charAt(0)); 
-                let historyText = "Noch keine Daten.";
-                let latestNote = "";
-                let lastSetsInline = "";
-                
-                if(historyObj[ex.id] && historyObj[ex.id].length > 0) {
-                    const sessionArr = historyObj[ex.id];
-                    const lastSession = sessionArr[sessionArr.length - 1];
-                    let bestW = 0; let bestR = 0;
-                    lastSession.sets.forEach(s => { if(s.w > bestW || (s.w === bestW && s.r > bestR)) { bestW = s.w; bestR = s.r; }});
-                    historyText = `Top-Satz zuletzt: ${bestW} kg x ${bestR} Wdh`;
-                    lastSetsInline = lastSession.sets.map(s => `${s.w}×${s.r}`).join(' | ');
-                    
-                    for(let i = sessionArr.length - 1; i >= 0; i--) {
-                        if(sessionArr[i].note) { latestNote = sessionArr[i].note; break; }
-                    }
-                }
-
-                let cardHTML = `
-                    <div class="exercise-card">
-                        <div class="exercise-header-row">
-                            <div class="exercise-title">${ex.name}</div>
-                        </div>
-                        <div class="exercise-target">Ziel: ${ex.target} | <span class="last-workout">${historyText}</span></div>
-                        ${lastSetsInline ? `<div style="font-size:12px; color:#888; margin-bottom:8px;">Letzte Serie: ${lastSetsInline}</div>` : ''}
-                        <textarea id="${ex.id}_note" class="ex-note" placeholder="Geräte-Setup / Notizen (z.B. Loch 14)...">${latestNote}</textarea>
-                        <div class="timer-btns">
-                            <button class="timer-btn" onclick="window.startTimer(60)">⏱ 60s / EMOM</button>
-                            <button class="timer-btn" onclick="window.startTimer(90)">⏱ 90s Pause</button>
-                            <button class="timer-btn" onclick="window.startTimer(120)">⏱ 120s Pause</button>
-                        </div>
-                `;
-                
-                for(let i=1; i<=sets; i++) {
-                    cardHTML += `
-                        <div class="set-row">
-                            <span class="set-label">S. ${i}</span>
-                            <input type="number" step="0.5" id="${ex.id}_w_${i}" placeholder="Kg">
-                            <input type="number" id="${ex.id}_r_${i}" placeholder="Wdh">
-                            <input type="number" id="${ex.id}_rir_${i}" placeholder="RIR">
-                        </div>`;
-                }
-                cardHTML += `</div>`;
-                container.innerHTML += cardHTML;
-            });
-        }
 
         async function saveWorkout() {
             saveBtn.innerText = "Speichere...";
@@ -980,26 +1811,28 @@
             plans[selectedPlan].forEach(ex => {
                 const sets = parseInt(ex.target.charAt(0));
                 let sessionSets = [];
-                const noteVal = document.getElementById(`${ex.id}_note`).value;
+                let noteVal = document.getElementById(`${ex.id}_note`).value;
+                if (bfrState[ex.id] && !noteVal.includes("[BFR]")) {
+                    noteVal = `[BFR-Okklusion] ` + noteVal;
+                }
 
                 for(let i=1; i<=sets; i++) {
                     const wVal = parseFloat(document.getElementById(`${ex.id}_w_${i}`).value) || 0;
                     const rVal = parseInt(document.getElementById(`${ex.id}_r_${i}`).value) || 0;
                     const rirVal = document.getElementById(`${ex.id}_rir_${i}`).value;
-                    
+
                     if(wVal > 0 || rVal > 0) {
                         sessionSets.push({ set: i, w: wVal, r: rVal, rir: rirVal });
                     }
                 }
-                
+
                 if(sessionSets.length > 0 || noteVal !== "") {
                     if(!historyObj[ex.id]) historyObj[ex.id] = [];
-                    // sessionId sichert Multi-Session-Trennung am selben Tag bei 100% Rückwärtskompatibilität
-                    historyObj[ex.id].push({ 
-                        date: dateString, 
-                        sessionId: sessionId, 
-                        sets: sessionSets, 
-                        note: noteVal 
+                    historyObj[ex.id].push({
+                        date: dateString,
+                        sessionId: sessionId,
+                        sets: sessionSets,
+                        note: noteVal
                     });
                     anySaved = true;
                 }
@@ -1025,21 +1858,434 @@
 
             try {
                 await setDoc(docRef, historyObj);
-                showToast("Workout gespeichert! 💪");
+                showToast("Workout erfolgreich gespeichert! 💪");
                 updateCoachBanner(false);
-                renderWorkout(); 
+                renderWorkout();
             } catch(e) {
                 alert("Fehler beim Speichern: " + e.message);
             } finally {
-                saveBtn.innerText = "💾 Training Speichern";
+                saveBtn.innerText = "💾 Training in Cloud speichern";
             }
         }
 
-        // UPGRADE: Wochen- & Monats-Dashboard Berechnung
+        // ==========================================
+        // TAB 2 LOGIK: GEWICHT, WASSER & RECOMP ENGINE
+        // ==========================================
+        function getTodayKey() {
+            return new Date().toLocaleDateString('de-CH');
+        }
+
+        function initBodyAndWaterUI() {
+            if (!historyObj._bodyLogs) historyObj._bodyLogs = [];
+            if (!historyObj._waterLogs) historyObj._waterLogs = {};
+
+            // Letztes Gewicht / KFA / Bauchumfang vorbefüllen
+            if (historyObj._bodyLogs.length > 0) {
+                const latest = historyObj._bodyLogs[historyObj._bodyLogs.length - 1];
+                if (latest.weight) document.getElementById('body-weight-input').value = latest.weight;
+                if (latest.bf) document.getElementById('body-bf-input').value = latest.bf;
+                if (latest.waist) document.getElementById('body-waist-input').value = latest.waist;
+            } else {
+                document.getElementById('body-weight-input').value = 84.0;
+                document.getElementById('body-bf-input').value = 14.0;
+                document.getElementById('body-waist-input').value = 82.0;
+            }
+
+            window.updateNutritionEngine();
+            updateWaterUI();
+        }
+
+        window.addWater = async function(ml) {
+            const today = getTodayKey();
+            if (!historyObj._waterLogs) historyObj._waterLogs = {};
+            if (!historyObj._waterLogs[today]) historyObj._waterLogs[today] = { ml: 0, electrolytes: false };
+            historyObj._waterLogs[today].ml = Math.max(0, (historyObj._waterLogs[today].ml || 0) + ml);
+            updateWaterUI();
+            try {
+                await setDoc(docRef, historyObj);
+                showToast(`💧 +${ml} ml Wasser gebucht!`);
+            } catch(e) {}
+        };
+
+        window.toggleElectrolytes = async function() {
+            const today = getTodayKey();
+            if (!historyObj._waterLogs) historyObj._waterLogs = {};
+            if (!historyObj._waterLogs[today]) historyObj._waterLogs[today] = { ml: 0, electrolytes: false };
+            historyObj._waterLogs[today].electrolytes = !historyObj._waterLogs[today].electrolytes;
+            updateWaterUI();
+            try {
+                await setDoc(docRef, historyObj);
+                showToast(historyObj._waterLogs[today].electrolytes ? "⚡ Elektrolyte heute abgehakt!" : "Elektrolyte zurückgesetzt");
+            } catch(e) {}
+        };
+
+        function updateWaterUI() {
+            const today = getTodayKey();
+            const wEntry = (historyObj._waterLogs && historyObj._waterLogs[today]) || { ml: 0, electrolytes: false };
+            const weight = parseFloat(document.getElementById('body-weight-input').value) || 84;
+
+            // Nippard Kap. 11: ~1ml/kcal + ~550ml Pre-Workout + Aktivitätsaufschlag
+            const allSessions = getAllChronologicalSessions();
+            const trainedToday = allSessions.some(s => s.date.split(' ')[0] === today && s.type !== 'Restday');
+            const targetMl = Math.round((weight * 35) + (trainedToday ? 750 : 250));
+
+            document.getElementById('water-goal-badge').innerText = `Ziel: ${targetMl} ml`;
+            const pct = Math.min(100, Math.round((wEntry.ml / targetMl) * 100));
+            document.getElementById('water-fill-bar').style.width = `${pct}%`;
+            document.getElementById('water-text-overlay').innerText = `${wEntry.ml} / ${targetMl} ml (${pct}%) ${wEntry.electrolytes ? '⚡' : ''}`;
+
+            const elecBtn = document.getElementById('elec-btn');
+            if (wEntry.electrolytes) {
+                elecBtn.style.background = "var(--accent)";
+                elecBtn.style.color = "#000";
+                elecBtn.innerText = "⚡ Elektrolyte ✓";
+            } else {
+                elecBtn.style.background = "rgba(255,255,255,0.06)";
+                elecBtn.style.color = "#fff";
+                elecBtn.innerText = "⚡ Elektrolyte";
+            }
+        }
+
+        window.saveBodyMetrics = async function() {
+            const w = parseFloat(document.getElementById('body-weight-input').value);
+            const bf = parseFloat(document.getElementById('body-bf-input').value) || null;
+            const waist = parseFloat(document.getElementById('body-waist-input').value) || null;
+            if (!w || w <= 30) {
+                alert("Bitte ein gültiges Körpergewicht eingeben.");
+                return;
+            }
+            const today = getTodayKey();
+            if (!historyObj._bodyLogs) historyObj._bodyLogs = [];
+
+            // Überschreibe heutigen Eintrag oder füge neuen hinzu
+            const existingIdx = historyObj._bodyLogs.findIndex(x => x.date === today);
+            const payload = { date: today, timestamp: Date.now(), weight: w, bf: bf, waist: waist };
+            if (existingIdx >= 0) historyObj._bodyLogs[existingIdx] = payload;
+            else historyObj._bodyLogs.push(payload);
+
+            try {
+                await setDoc(docRef, historyObj);
+                showToast("⚖️ Körperdaten gespeichert!");
+                renderBodyTab();
+            } catch(e) {
+                alert("Fehler beim Speichern: " + e.message);
+            }
+        };
+
+        window.updateNutritionEngine = function() {
+            const weight = parseFloat(document.getElementById('body-weight-input').value) || 84;
+            const bf = parseFloat(document.getElementById('body-bf-input').value) || 14;
+            const goal = document.getElementById('nutri-goal').value;
+            const dayType = document.getElementById('nutri-daytype').value;
+
+            // LBM Berechnung (Nippard Kap. 8)
+            const lbmKg = weight * (1 - (bf / 100));
+            const lbmLbs = lbmKg * 2.20462;
+
+            // Mifflin-St. Jeor (185cm, ~32J, männlich) -> 10*w + 6.25*185 - 5*32 + 5 = 10*w + 1001.25
+            const bmr = (10 * weight) + 1001;
+            const maintenance = Math.round(bmr * 1.65); // Moderately Active + Hybrid Training
+
+            let targetKcal = maintenance;
+            if (goal === 'leanbulk') targetKcal = Math.round(maintenance * 1.10);
+            if (goal === 'cut') targetKcal = Math.round(maintenance * 0.85);
+
+            // Sliding Protein Model (1.2 - 1.6g / lb LBM; je definierter, desto näher an 1.6)
+            const proFactorLbs = bf <= 12 ? 1.5 : (bf <= 16 ? 1.35 : 1.25);
+            const proGrams = Math.round(lbmLbs * proFactorLbs);
+
+            // Fett ~25% der Kalorien
+            const fatGrams = Math.round((targetKcal * 0.25) / 9);
+            let carbGrams = Math.max(80, Math.round((targetKcal - (proGrams * 4) - (fatGrams * 9)) / 4));
+
+            // Logical Carb Cycling (Nippard Kap. 5: -20% Carbs an Restdays)
+            if (dayType === 'rest') {
+                carbGrams = Math.round(carbGrams * 0.80);
+                targetKcal = (proGrams * 4) + (fatGrams * 9) + (carbGrams * 4);
+            }
+
+            document.getElementById('macro-kcal').innerText = targetKcal;
+            document.getElementById('macro-pro').innerText = `${proGrams} g`;
+            document.getElementById('macro-carb-fat').innerText = `${carbGrams}C / ${fatGrams}F`;
+
+            // Leucin-Schwelle (Dr. Stuart Phillips Kap. 9: 0.045g/kg) & Peri-Workout (Kap. 11)
+            const leucineThreshold = (weight * 0.045).toFixed(1);
+            const preCarbs = Math.round(weight * 1.0);
+            const prePro = Math.round(weight * 0.5);
+            const postCarbs = Math.round(weight * 1.2);
+
+            document.getElementById('peri-workout-box').innerHTML = `
+                <div>🧬 <b>Leucin-Schwelle pro Mahlzeit:</b> ~${leucineThreshold} g Leucin (ca. ${Math.round(proGrams / 4)}–${Math.round(proGrams / 5)} g Protein aufgeteilt auf 4–5 Mahlzeiten, inkl. Casein/Magerquark vor dem Schlafen).</div>
+                <div style="margin-top:4px;">⚡ <b>Pre-Workout (60–90 Min. vorher):</b> ≥${preCarbs} g komplexe Carbs + 1 Frucht (Glucose+Fructose-Transporter) + ${prePro} g leichtes Protein + Prise Salz & Zimt.</div>
+                <div style="margin-top:4px;">🚀 <b>Post-Workout:</b> ${postCarbs} g schnelle Carbs + ${prePro} g Whey/Protein + 5 g Creatin Monohydrat.</div>
+            `;
+            updateWaterUI();
+        };
+
+        function renderBodyTab() {
+            initBodyAndWaterUI();
+            const logs = (historyObj._bodyLogs || []).slice().sort((a,b) => a.timestamp - b.timestamp);
+            const weightVal = parseFloat(document.getElementById('body-weight-input').value) || 84;
+            const bfVal = parseFloat(document.getElementById('body-bf-input').value) || 14;
+            const lbm = (weightVal * (1 - bfVal / 100)).toFixed(1);
+            document.getElementById('kpi-lbm').innerText = `${lbm} kg`;
+
+            if (logs.length === 0) return;
+
+            const last7 = logs.slice(-7);
+            const prev7 = logs.slice(-14, -7);
+            const avg7 = (last7.reduce((s, x) => s + x.weight, 0) / last7.length).toFixed(1);
+            document.getElementById('kpi-avg-weight').innerText = `${avg7} kg`;
+
+            const latestWaist = [...logs].reverse().find(x => x.waist);
+            document.getElementById('kpi-waist-latest').innerText = latestWaist ? `${latestWaist.waist} cm` : `-- cm`;
+
+            const badge = document.getElementById('recomp-status-badge');
+            if (prev7.length > 0) {
+                const avgPrev = prev7.reduce((s, x) => s + x.weight, 0) / prev7.length;
+                const diff = (avg7 - avgPrev).toFixed(2);
+                document.getElementById('kpi-weight-delta').innerText = `${diff > 0 ? '+' : ''}${diff} kg`;
+                if (Math.abs(diff) <= 0.35) {
+                    badge.innerText = "🎯 Perfekter Recomp-Korridor";
+                } else if (diff > 0.35) {
+                    badge.innerText = "📈 Lean Bulk Aufbau (+Trend)";
+                } else {
+                    badge.innerText = "🔥 Defizit / Cut (-Trend)";
+                }
+            } else {
+                document.getElementById('kpi-weight-delta').innerText = "Neu";
+                badge.innerText = `${logs.length} Messungen aktiv`;
+            }
+
+            if (weightChartInstance) weightChartInstance.destroy();
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            weightChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: logs.slice(-14).map(x => x.date.slice(0, 5)),
+                    datasets: [{
+                        label: 'Körpergewicht (kg)',
+                        data: logs.slice(-14).map(x => x.weight),
+                        borderColor: '#03dac6',
+                        backgroundColor: 'rgba(3, 218, 198, 0.15)',
+                        borderWidth: 2.5,
+                        tension: 0.25,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: {
+                        y: { grid: { color: '#222' }, ticks: { color: '#9ca3af' } },
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af' } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // TAB 3 LOGIK: VOLUMEN-LANDMARKS (1/3 FORMEL) & HISTORIE
+        // ==========================================
+        function renderVolumeLandmarks() {
+            const container = document.getElementById('volume-landmarks-container');
+            const cutoff = Date.now() - (7 * 24 * 60 * 60 * 1000);
+
+            const weeklySets = {};
+            Object.keys(volumeLandmarks).forEach(m => weeklySets[m] = 0);
+
+            for (const [planKey, exList] of Object.entries(plans)) {
+                exList.forEach(ex => {
+                    const entries = historyObj[ex.id] || [];
+                    entries.forEach(entry => {
+                        const ts = entry.sessionId || parseSwissDate(entry.date);
+                        if (ts >= cutoff) {
+                            const validSets = (entry.sets || []).filter(s => s.w > 0 || s.r > 0).length;
+                            if (ex.primaryMuscle && weeklySets[ex.primaryMuscle] !== undefined) {
+                                weeklySets[ex.primaryMuscle] += validSets;
+                            }
+                            // Trainingspedia 1/3-Überlappungsformel für stark beteiligte Hilfsmuskeln
+                            (ex.secondaryMuscles || []).forEach(sec => {
+                                if (weeklySets[sec] !== undefined) {
+                                    weeklySets[sec] += (validSets / 3);
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+
+            let html = '';
+            for (const [muscle, lm] of Object.entries(volumeLandmarks)) {
+                const val = Math.round(weeklySets[muscle] * 10) / 10;
+                const pct = Math.min(100, Math.round((val / lm.mrv) * 100));
+                let color = "var(--primary)";
+                let statusLbl = "Aufbau";
+                if (val < lm.mev) { color = "#6b7280"; statusLbl = `< MEV (${lm.mev})`; }
+                else if (val >= lm.mavMin && val <= lm.mavMax) { color = "var(--accent)"; statusLbl = `Optimal MAV (${lm.mavMin}-${lm.mavMax})`; }
+                else if (val > lm.mrv) { color = "var(--danger)"; statusLbl = `⚠️ > MRV (${lm.mrv}+)`; }
+                else { color = "var(--primary)"; statusLbl = `Aktiv (${lm.mavMin}-${lm.mavMax})`; }
+
+                html += `
+                    <div class="vol-row">
+                        <div class="vol-header">
+                            <span>${muscle}</span>
+                            <span style="color:${color};">${val} Sätze • ${statusLbl}</span>
+                        </div>
+                        <div class="vol-track">
+                            <div class="vol-fill" style="width:${pct}%; background:${color};"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        // ==========================================
+        // TAB 4 LOGIK: MESOZYKLUS EVALUATION (Trainingspedia Pro S. 14-22)
+        // ==========================================
+        window.evaluateMesoState = function() {
+            const sSleep = parseInt(document.getElementById('sl-sleep').value);
+            const sMotiv = parseInt(document.getElementById('sl-motiv').value);
+            const sSpeed = parseInt(document.getElementById('sl-speed').value);
+            const sDoms = parseInt(document.getElementById('sl-doms').value);
+            const sJoints = parseInt(document.getElementById('sl-joints').value);
+
+            document.getElementById('val-sleep').innerText = `${sSleep} / 5`;
+            document.getElementById('val-motiv').innerText = `${sMotiv} / 5`;
+            document.getElementById('val-speed').innerText = `${sSpeed} / 5`;
+            document.getElementById('val-doms').innerText = `${sDoms} / 5`;
+            document.getElementById('val-joints').innerText = `${sJoints} / 5`;
+
+            const avgScore = (sSleep + sMotiv + sSpeed + sDoms + sJoints) / 5;
+            const meso = getCurrentMesoInfo();
+            const resBox = document.getElementById('meso-eval-result');
+
+            if (sJoints <= 2) {
+                resBox.style.borderLeftColor = "var(--danger)";
+                resBox.innerHTML = `🚨 <b>Gelenk-/Struktur-Warnung:</b> Passive Strukturen melden Überlastung! <b>Empfehlung (Trainingspedia Pro):</b> Sofort lokaler Deload oder Wechsel auf den <b>🩸 BFR-Modus</b> (20–30% Gewicht) für die betroffene Muskelgruppe.`;
+            } else if (meso.mesoWeek <= 2 && avgScore <= 2.8) {
+                resBox.style.borderLeftColor = "var(--warning)";
+                resBox.innerHTML = `⚠️ <b>Zu frühes Overreaching in ${meso.name}:</b> Dein Ist-Zustand liegt deutlich unter dem Soll-Wert für den Zyklusstart. <b>Volumen-Guide:</b> Streiche <b>-1 Arbeitssatz pro Grundübung</b>, um ein Ausbrennen vor Woche 4 zu verhindern!`;
+            } else if (meso.mesoWeek === 4 && avgScore >= 4.4) {
+                resBox.style.borderLeftColor = "var(--primary)";
+                resBox.innerHTML = `🚀 <b>Unterfordert in Woche 4 (Overreaching-Woche):</b> Du hast noch enorme Regenerationsreserven (Score ${avgScore.toFixed(1)}/5). <b>Volumen-Guide:</b> Füge im nächsten Zyklus <b>+1 Satz bei deinen Prioritäts-Übungen</b> hinzu oder erhöhe dein 1RM/Arbeitsgewicht um +2.5 bis 5 kg!`;
+            } else {
+                resBox.style.borderLeftColor = "var(--accent)";
+                resBox.innerHTML = `✅ <b>Optimaler Korridor (${meso.name} | Score ${avgScore.toFixed(1)}/5):</b> Dein Ist-Zustand deckt sich exakt mit dem Trainingspedia-Sollwert. <b>Empfehlung:</b> Behalte das aktuelle Satzvolumen exakt bei ("If it's not broke, don't fix it!").`;
+            }
+        };
+
+        window.saveMesoCheckin = async function() {
+            const now = new Date();
+            const dStr = now.toLocaleDateString('de-CH');
+            if (!historyObj._mesoCheckins) historyObj._mesoCheckins = [];
+            historyObj._mesoCheckins.push({
+                date: dStr,
+                timestamp: now.getTime(),
+                sleep: parseInt(document.getElementById('sl-sleep').value),
+                motiv: parseInt(document.getElementById('sl-motiv').value),
+                speed: parseInt(document.getElementById('sl-speed').value),
+                doms: parseInt(document.getElementById('sl-doms').value),
+                joints: parseInt(document.getElementById('sl-joints').value)
+            });
+            try {
+                await setDoc(docRef, historyObj);
+                showToast("🧠 Mesozyklus Check-In gespeichert!");
+            } catch(e) {}
+        };
+
+        // REST TIMER & AUDIO
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3100);
+        }
+
+        function playTimerBeep() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioCtx();
+                [0, 0.22, 0.44].forEach((offset, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = idx === 2 ? 1046.5 : 880;
+                    gain.gain.setValueAtTime(0.25, ctx.currentTime + offset);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.18);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + offset);
+                    osc.stop(ctx.currentTime + offset + 0.19);
+                });
+            } catch(e) {}
+        }
+
+        function formatTimer(sec) {
+            const s = Math.max(0, sec);
+            return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, '0');
+        }
+
+        window.startTimer = function(seconds) {
+            clearInterval(timerInterval);
+            const tb = document.getElementById('timer-bar');
+            const td = document.getElementById('timer-display');
+            tb.classList.remove('timer-done');
+            tb.style.display = 'flex';
+            timerRemainingSeconds = seconds;
+            td.innerText = `Pause: ${formatTimer(timerRemainingSeconds)} (Atem & Fokus prüfen!)`;
+
+            timerInterval = setInterval(() => {
+                timerRemainingSeconds--;
+                if (timerRemainingSeconds > 0) {
+                    td.innerText = `Pause: ${formatTimer(timerRemainingSeconds)}`;
+                } else {
+                    clearInterval(timerInterval);
+                    tb.classList.add('timer-done');
+                    td.innerText = "🔥 Puls bereit? Satz visualisieren & los!";
+                    if (navigator.vibrate) navigator.vibrate([300, 120, 300]);
+                    playTimerBeep();
+                    setTimeout(() => {
+                        if (tb.classList.contains('timer-done')) window.stopTimer();
+                    }, 5000);
+                }
+            }, 1000);
+        };
+
+        window.adjustTimer = function(deltaSeconds) {
+            timerRemainingSeconds = Math.max(5, timerRemainingSeconds + deltaSeconds);
+            const tb = document.getElementById('timer-bar');
+            tb.classList.remove('timer-done');
+            document.getElementById('timer-display').innerText = `Pause: ${formatTimer(timerRemainingSeconds)}`;
+        };
+
+        window.stopTimer = function() {
+            clearInterval(timerInterval);
+            const tb = document.getElementById('timer-bar');
+            tb.classList.remove('timer-done');
+            tb.style.display = 'none';
+        };
+
+        function getCalculated1RM(weight, reps) {
+            if(reps === 0 || weight === 0) return 0;
+            return Math.round(weight * (1 + (reps / 30)));
+        }
+
+        window.updateLiftSrpePreview = function() {
+            const dur = parseFloat(document.getElementById('lift-duration').value) || 0;
+            const rpe = parseFloat(document.getElementById('lift-rpe').value) || 0;
+            document.getElementById('lift-srpe-preview').innerText = `Load: ${Math.round(dur * rpe)} AU`;
+        };
+
+        // DASHBOARD & HISTORIE
         window.setOverviewPeriod = function(days) {
             overviewPeriodDays = days;
-            document.getElementById('period-7').classList.toggle('active', days === 7);
-            document.getElementById('period-30').classList.toggle('active', days === 30);
+            document.getElementById('period-7').style.background = days === 7 ? 'var(--primary)' : 'rgba(255,255,255,0.06)';
+            document.getElementById('period-7').style.color = days === 7 ? '#000' : '#fff';
+            document.getElementById('period-30').style.background = days === 30 ? 'var(--primary)' : 'rgba(255,255,255,0.06)';
+            document.getElementById('period-30').style.color = days === 30 ? '#000' : '#fff';
             renderOverviewDashboard();
         };
 
@@ -1073,11 +2319,11 @@
 
             const totalSessions = liftCount + condCount;
             document.getElementById('kpi-sessions').innerText = totalSessions;
-            document.getElementById('kpi-tonnage').innerText = totalTonnage >= 1000 
-                ? (totalTonnage / 1000).toFixed(1) + " t" 
+            document.getElementById('kpi-tonnage').innerText = totalTonnage >= 1000
+                ? (totalTonnage / 1000).toFixed(1) + " t"
                 : Math.round(totalTonnage) + " kg";
-            document.getElementById('kpi-distance').innerText = totalElev > 0 
-                ? `${totalDist.toFixed(1)}km / ${totalElev}m` 
+            document.getElementById('kpi-distance').innerText = totalElev > 0
+                ? `${totalDist.toFixed(1)}km / ${totalElev}m`
                 : `${totalDist.toFixed(1)} km`;
             document.getElementById('kpi-load').innerText = `${totalLoad} AU`;
 
@@ -1091,8 +2337,8 @@
 
         function populateHistorySelector() {
             const currentVal = historySelector.value;
-            historySelector.innerHTML = '<option value="ALL_SESSIONS">📓 Komplettes Trainings-Tagebuch (Alle Pläne)</option>';
-            
+            historySelector.innerHTML = '<option value="ALL_SESSIONS">📓 Komplettes Trainings-Tagebuch (Alle Einheiten)</option>';
+
             Object.entries(plans).forEach(([planKey, plan]) => {
                 plan.forEach(ex => {
                     if(historyObj[ex.id] && historyObj[ex.id].length > 0) {
@@ -1113,42 +2359,39 @@
             const chartBox = document.getElementById('chart-box');
             const container = document.getElementById('history-list-container');
 
-            // 1. Modus: Komplettes Trainings-Tagebuch (inkl. Multi-Session-Badges & Konditions-Metriken)
             if (exId === "ALL_SESSIONS") {
                 metricSelector.style.display = 'none';
                 chartBox.style.display = 'none';
-                
+
                 const allSessions = getAllChronologicalSessions();
                 if (allSessions.length === 0) {
                     container.innerHTML = '<p style="text-align:center; color:#a0a0a0;">Noch keine Trainings dokumentiert.</p>';
                     return;
                 }
 
-                container.innerHTML = '<h3>📓 Absolvierte Trainings & Pläne:</h3>';
-                
+                container.innerHTML = '';
                 for (let i = allSessions.length - 1; i >= 0; i--) {
                     const s = allSessions[i];
                     let borderColor = "var(--primary)";
-                    if (s.type === "Restday") borderColor = "#777";
-                    else if (!["OK1", "UK1", "OK2", "UK2"].includes(s.type)) borderColor = "var(--success)";
+                    if (s.type === "Restday") borderColor = "#555";
+                    else if (!["OK1", "UK1", "OK2", "UK2"].includes(s.type)) borderColor = "var(--accent)";
 
-                    // Multi-Session Badge falls 2+ Einheiten am selben Kalendertag stattfanden
-                    const multiBadge = s.totalSessionsThatDay > 1 
-                        ? `<span class="badge-session-num">Session ${s.sessionIndexOfDay}/${s.totalSessionsThatDay} am Tag</span>` 
+                    const multiBadge = s.totalSessionsThatDay > 1
+                        ? `<span class="badge-session-num">Session ${s.sessionIndexOfDay}/${s.totalSessionsThatDay}</span>`
                         : "";
-                    const loadBadge = s.type !== "Restday" 
-                        ? `<span class="badge-srpe">Load: ${s.calculatedLoad} AU${s.rpe ? ` (RPE ${s.rpe})` : ''}</span>` 
+                    const loadBadge = s.type !== "Restday"
+                        ? `<span class="badge-srpe">Load: ${s.calculatedLoad} AU${s.rpe ? ` (RPE ${s.rpe})` : ''}</span>`
                         : "";
 
                     let detailsHtml = "";
                     if (s.exercises && s.exercises.length > 0) {
                         detailsHtml = s.exercises.map(ex => {
                             let setsStr = ex.sets.map(set => {
-                                let rir = (set.rir !== "" && set.rir !== undefined) ? ` (RIR ${set.rir})` : "";
-                                return `${set.w}kg x ${set.r}${rir}`;
+                                let rir = (set.rir !== "" && set.rir !== undefined) ? ` @RIR ${set.rir}` : "";
+                                return `${set.w}kg × ${set.r}${rir}`;
                             }).join(" | ");
-                            let noteStr = ex.note ? `<div style="font-size:12px; color:var(--success); margin-top:2px;">📝 ${ex.note}</div>` : "";
-                            return `<div class="diary-ex-block"><div class="diary-ex-title">${ex.name}</div><div style="font-size:13px; color:#ddd;">${setsStr}</div>${noteStr}</div>`;
+                            let noteStr = ex.note ? `<div style="font-size:11.5px; color:var(--accent); margin-top:2px;">📝 ${ex.note}</div>` : "";
+                            return `<div class="diary-ex-block"><div class="diary-ex-title">${ex.name}</div><div style="font-size:12.5px; color:#ddd;">${setsStr}</div>${noteStr}</div>`;
                         }).join("");
                     } else {
                         let pills = [];
@@ -1159,17 +2402,17 @@
                         if (s.hr) pills.push(`❤️ ${s.hr}`);
                         if (s.rounds) pills.push(`🔄 ${s.rounds}`);
 
-                        const pillsHtml = pills.length > 0 
-                            ? `<div class="cond-metrics-pills">${pills.map(p => `<span class="metric-pill">${p}</span>`).join('')}</div>` 
-                            : `<div style="color:#a0a0a0; font-size:13px;">Einheit erfolgreich über Quick-Log dokumentiert.</div>`;
-                        const noteHtml = s.note ? `<div style="font-size:12px; color:var(--success); margin-top:6px;">📝 ${s.note}</div>` : "";
+                        const pillsHtml = pills.length > 0
+                            ? `<div class="cond-metrics-pills">${pills.map(p => `<span class="metric-pill">${p}</span>`).join('')}</div>`
+                            : `<div style="color:var(--text-muted); font-size:12.5px;">${s.note || 'Dokumentiert.'}</div>`;
+                        const noteHtml = (s.note && pills.length > 0) ? `<div style="font-size:11.5px; color:var(--accent); margin-top:5px;">📝 ${s.note}</div>` : "";
                         detailsHtml = pillsHtml + noteHtml;
                     }
 
                     container.innerHTML += `
                         <div class="history-entry" style="border-left-color: ${borderColor};">
                             <div class="history-date">
-                                <span>📅 ${s.date} Uhr — <span style="color:#fff; font-size:14px;">${s.label}</span></span>
+                                <span>📅 ${s.date} — <strong style="color:#fff;">${s.label}</strong></span>
                                 <span>${multiBadge} ${loadBadge}</span>
                             </div>
                             ${detailsHtml}
@@ -1179,7 +2422,6 @@
                 return;
             }
 
-            // 2. Modus: Einzelne Übungs-Analyse mit Chart
             const metric = metricSelector.value;
             const data = historyObj[exId];
             if(!data) return;
@@ -1193,7 +2435,7 @@
             data.forEach(d => {
                 if(d.sets.length === 0) return;
                 labels.push(d.date.split(' ')[0]);
-                
+
                 if(metric === 'max') {
                     dataPoints.push(Math.max(...d.sets.map(s => s.w)));
                 } else if(metric === 'vol') {
@@ -1212,31 +2454,49 @@
 
             if(chartInstance) chartInstance.destroy();
             const ctx = document.getElementById('progressChart').getContext('2d');
-            
-            let labelText = metric === 'max' ? 'Max. Gewicht (kg)' : (metric === 'vol' ? 'Gesamtvolumen (kg)' : '1RM Epley (kg)');
-            let chartColor = metric === 'max' ? '#bb86fc' : (metric === 'vol' ? '#03dac6' : '#cf6679');
-            let bgChartColor = metric === 'max' ? 'rgba(187, 134, 252, 0.2)' : (metric === 'vol' ? 'rgba(3, 218, 198, 0.2)' : 'rgba(207, 102, 121, 0.2)');
+
+            let labelText = metric === 'max' ? 'Max. Gewicht (kg)' : (metric === 'vol' ? 'Workload / Tonnage (kg)' : 'Geschätztes 1RM (kg)');
+            let chartColor = metric === 'max' ? '#bb86fc' : (metric === 'vol' ? '#03dac6' : '#ffb74d');
 
             chartInstance = new Chart(ctx, {
                 type: 'line',
-                data: { labels: labels, datasets: [{ label: labelText, data: dataPoints, borderColor: chartColor, backgroundColor: bgChartColor, borderWidth: 3, pointBackgroundColor: '#fff', pointRadius: 4, fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: {color: 'white'} } }, scales: { y: { grid: { color: '#333' }, ticks: { color: '#a0a0a0' }}, x: { grid: { display: false }, ticks: { color: '#a0a0a0' }}}}
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: labelText,
+                        data: dataPoints,
+                        borderColor: chartColor,
+                        backgroundColor: 'rgba(187, 134, 252, 0.15)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointRadius: 4,
+                        tension: 0.2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { color: 'white' } } },
+                    scales: {
+                        y: { grid: { color: '#222' }, ticks: { color: '#9ca3af' }},
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af' }}
+                    }
+                }
             });
 
-            container.innerHTML = '<h3>Letzte Einträge dieser Übung:</h3>';
-            
+            container.innerHTML = '';
             for(let i = data.length - 1; i >= 0; i--) {
                 const session = data[i];
                 if(session.sets.length === 0 && !session.note) continue;
-                
+
                 let setDetails = session.sets.map(s => {
-                    let rirText = s.rir !== "" && s.rir !== undefined ? ` <span style="color:#a0a0a0;font-size:12px;">(RIR: ${s.rir})</span>` : "";
+                    let rirText = s.rir !== "" && s.rir !== undefined ? ` <span style="color:var(--text-muted);font-size:11.5px;">(RIR ${s.rir})</span>` : "";
                     let rmText = s.w > 0 && s.r > 0 ? `<span class="badge-1rm">1RM: ${getCalculated1RM(s.w, s.r)}kg</span>` : "";
-                    return `Satz ${s.set}: ${s.w}kg x ${s.r} Wdh${rirText} ${rmText}`;
+                    return `Satz ${s.set}: <b>${s.w} kg × ${s.r}</b>${rirText} ${rmText}`;
                 }).join('<br>');
-                
-                let noteHtml = session.note ? `<div style="color:var(--primary); font-size:12px; margin-top:8px;">📝 Notiz: ${session.note}</div>` : "";
-                
+
+                let noteHtml = session.note ? `<div style="color:var(--accent); font-size:12px; margin-top:6px;">📝 ${session.note}</div>` : "";
                 container.innerHTML += `<div class="history-entry"><div class="history-date"><span>📅 ${session.date} Uhr</span></div><div>${setDetails}</div>${noteHtml}</div>`;
             }
         }
