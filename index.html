@@ -19,6 +19,8 @@
             --warning-dim: rgba(255, 183, 77, 0.15);
             --danger: #cf6679;
             --blue: #4fc3f7;
+            --superset: #00e5ff;
+            --superset-dim: rgba(0, 229, 255, 0.14);
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --radius-lg: 16px;
@@ -249,7 +251,7 @@
         .srpe-item { display: flex; align-items: center; gap: 6px; }
         .srpe-item input { width: 58px; padding: 6px; }
 
-        /* Exercise Cards */
+        /* Exercise Cards & Superset Visuals */
         .exercise-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -258,7 +260,59 @@
             margin-bottom: 15px;
             box-shadow: var(--shadow);
             transition: all 0.25s;
+            position: relative;
         }
+        .exercise-card.superset-card-a1 {
+            border-left: 4px solid var(--superset);
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            margin-bottom: 0;
+        }
+        .exercise-card.superset-card-a2 {
+            border-left: 4px solid var(--superset);
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            margin-top: 0;
+        }
+        .superset-connector {
+            background: linear-gradient(90deg, rgba(0, 229, 255, 0.22) 0%, rgba(18, 22, 33, 0.95) 100%);
+            border-left: 4px solid var(--superset);
+            border-right: 1px solid rgba(0, 229, 255, 0.2);
+            padding: 7px 12px;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--superset);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .superset-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--superset-dim);
+            border: 1px solid var(--superset);
+            color: var(--superset);
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .superset-rest-hint {
+            background: rgba(0, 229, 255, 0.07);
+            border: 1px dashed rgba(0, 229, 255, 0.35);
+            color: #b2ebf2;
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 11.5px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
         .exercise-card.bfr-active {
             border-color: var(--danger);
             background: linear-gradient(145deg, rgba(22,27,40,0.95) 0%, rgba(70,22,35,0.35) 100%);
@@ -333,6 +387,12 @@
             cursor: pointer;
             font-size: 11.5px;
             font-weight: 600;
+        }
+        .timer-btn.superset-timer {
+            background: rgba(0, 229, 255, 0.14);
+            border-color: rgba(0, 229, 255, 0.45);
+            color: var(--superset);
+            font-weight: 700;
         }
         .timer-btn:active { background: var(--primary); color: #000; }
 
@@ -513,7 +573,7 @@
     <header class="app-header">
         <div class="app-title-wrap">
             <h1>HOMEGYM TRACKER PRO</h1>
-            <div class="app-subtitle">ATX Cable 60kg • Incline Bench • Nippard × Trainingspedia</div>
+            <div class="app-subtitle">ATX Cable 60kg • Superset Engine • Nippard × Trainingspedia</div>
         </div>
         <div id="cloud-status" class="sync-pill">☁️ Cloud Sync</div>
     </header>
@@ -819,14 +879,14 @@
     =========================================== -->
     <section id="section-meso" class="tab-section">
 
-        <!-- NEU: Spezialisierungs-Schalter (Trainingspedia Pro S. 28-38 & Nippard Weak Points) -->
+        <!-- Spezialisierungs-Schalter (Trainingspedia Pro S. 28-38 & Nippard Weak Points) -->
         <div class="glass-card" style="border-left: 4px solid var(--warning);">
             <div class="card-header">
                 <span class="card-title" style="color:var(--warning);">🎯 Spezialisierungs-Schalter (Systemic MRV)</span>
                 <span id="spec-status-pill" class="badge badge-caffeine">Inaktiv</span>
             </div>
             <p style="font-size:12px; color:var(--text-muted); margin-top:0;">
-                Laut <i>Trainingspedia Pro (S. 30–38)</i> übersteigt die Summe aller Einzel-MRVs dein <b>Systemic MRV</b>. Aktiviere den Schalter, wähle <b>max. 2–3 Fokus-Muskeln</b> (für 10–12 Wochen): Das System erhöht die Sätze deiner Fokus-Muskeln automatisch um <b>+30 %</b>, holt die Übungen an den Anfang des Workouts und reduziert den Rest optional um <b>-25 %</b>!
+                Laut <i>Trainingspedia Pro (S. 30–38)</i> übersteigt die Summe aller Einzel-MRVs dein <b>Systemic MRV</b>. Aktiviere den Schalter, wähle <b>max. 2–3 Fokus-Muskeln</b> (für 10–12 Wochen): Das System erhöht die Sätze deiner Fokus-Muskeln automatisch um <b>+30 %</b>, holt die Übungen (inkl. kompletter Supersatz-Paare) an den Anfang des Workouts und reduziert den Rest optional um <b>-25 %</b>!
             </p>
 
             <div class="toggle-switch-row">
@@ -959,7 +1019,7 @@
             "UK2": "OK1"
         };
 
-        // PERFEKTIONIERTER HOMEGYM-PLAN (ATX Kabelzug 60kg + Schrägbank + Butterfly/Reverse Pec Deck + Beinstrecker/-beuger)
+        // ALLE ÜBUNGEN IN EINZELNEN KARTEN + SUPERSATZ-METADATEN (100% Rückwärtskompatibel mit bestehenden IDs)
         const plans = {
             "OK1": [
                 {
@@ -997,7 +1057,7 @@
                     name: "Chest-Supported DB Row auf Schrägbank (+ Kelso Shrugs)",
                     target: "3 Sätze x 8–12 Wdh.",
                     earlyRir: "1", lastRir: "0",
-                    cue: "Brust fest auf Schrägbank (0% Schwung!) | 45° Ellbogen | Nach Satzende direkt +4-6 Kelso Shrugs",
+                    cue: "Brust fest auf Schrägbank (0% Schwung!) | 45° Ellbogen | Nach Satzende direkt +4-6 Kelso Shrugs aus den Schulterblättern",
                     sub: "Super-ROM Overhand Cable Row (breiter Griff am ATX-Kabelzug)",
                     restRec: 150, warmupType: "light",
                     primaryMuscle: "Rücken", secondaryMuscles: ["Bizeps", "Schulter (mittlere/hintere)"]
@@ -1024,13 +1084,25 @@
                 },
                 {
                     id: "ok1_7",
-                    name: "Nacken-Curls / Neck Extensions + Lying Rope Face Pulls",
-                    target: "3 Sätze x 12–15 Wdh.",
+                    name: "A1: Nacken-Curls / Neck Extensions (Hantelscheibe)",
+                    target: "3 Sätze x 15–20 Wdh.",
                     earlyRir: "1", lastRir: "0",
-                    cue: "Hantelscheibe für HWS-Stabilität im Supersatz mit Rope Face Pulls am Kabelzug (2s Squeeze!)",
-                    sub: "Reverse Pec Deck (umgestellte Butterfly-Maschine)",
-                    restRec: 75, warmupType: "light",
-                    primaryMuscle: "Nacken", secondaryMuscles: ["Schulter (mittlere/hintere)"]
+                    cue: "Kontrollierte ROM auf der Bank für HWS- & Kampfsport-Stabilität | Kein Reißen",
+                    sub: "Head-Harness Neck Extensions am Kabelzug",
+                    restRec: 45, warmupType: "light",
+                    supersetGroup: "OK1_SS1", supersetRole: "A1", supersetPartner: "Lying Paused Rope Face Pulls", supersetRest: 45,
+                    primaryMuscle: "Nacken", secondaryMuscles: []
+                },
+                {
+                    id: "ok1_8",
+                    name: "A2: Lying Paused Rope Face Pulls (ATX-Kabelzug)",
+                    target: "3 Sätze x 10–12 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Seil Richtung Stirn/Ohren ziehen | 1-2s Pause in maximaler Kontraktion der hinteren Schulter!",
+                    sub: "Reverse Pec Deck (an umgestellter Butterfly-Maschine)",
+                    restRec: 60, warmupType: "light",
+                    supersetGroup: "OK1_SS1", supersetRole: "A2", supersetPartner: "Nacken-Curls", supersetRest: 60,
+                    primaryMuscle: "Schulter (mittlere/hintere)", secondaryMuscles: ["Rücken"]
                 }
             ],
             "UK1": [
@@ -1078,20 +1150,32 @@
             "OK2": [
                 {
                     id: "ok2_1",
-                    name: "Klimmzüge (Neutral/Breit) + Straight-Bar Cable Lat Prayer",
-                    target: "4 Sätze x 8–12 Wdh.",
+                    name: "A1: Klimmzüge (Zusatzgewicht / Neutral- o. Breitgriff)",
+                    target: "4 Sätze x 8–10 Wdh.",
                     earlyRir: "1-2", lastRir: "0",
-                    cue: "Ellbogen eng nach unten ziehen | Letzter Satz: Direkt Cable Lat Prayers im Stretch (Long-Length Partials)!",
-                    sub: "Lean-Back Lat Pulldown am hohen ATX-Kabelzug (bis 120kg gesamt)",
-                    restRec: 180, warmupType: "heavy",
+                    cue: "Ellbogen eng nach unten ziehen | Brust zur Stange | Letzter Satz: Long-Length Partials unten",
+                    sub: "Lean-Back Lat Pulldown am hohen ATX-Kabelzug (bis 120kg)",
+                    restRec: 60, warmupType: "heavy",
+                    supersetGroup: "OK2_SS1", supersetRole: "A1", supersetPartner: "Straight-Bar Cable Lat Prayer", supersetRest: 60,
                     primaryMuscle: "Rücken", secondaryMuscles: ["Bizeps"]
+                },
+                {
+                    id: "ok2_8",
+                    name: "A2: Straight-Bar Cable Lat Prayer (Hoher ATX-Kabelzug)",
+                    target: "3 Sätze x 12–15 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Mit gestreckten Armen weit vorlehnen für extremen Lat-Stretch oben | Letzter Satz: Long-Length Partials",
+                    sub: "DB Lat Pullover (Quer über die Bank)",
+                    restRec: 90, warmupType: "light",
+                    supersetGroup: "OK2_SS1", supersetRole: "A2", supersetPartner: "Klimmzüge", supersetRest: 90,
+                    primaryMuscle: "Rücken", secondaryMuscles: []
                 },
                 {
                     id: "ok2_2",
                     name: "Seated DB Shoulder Press (auf 80° Schrägbank)",
                     target: "3 Sätze x 8–10 Wdh.",
                     earlyRir: "1-2", lastRir: "0",
-                    cue: "Rücken fest an der Schrägbank | Ellbogen unter 90° absenken | Letzter Satz: Dropset am Kabelzug",
+                    cue: "Rücken fest an der Schrägbank | Ellbogen unter 90° absenken | Letzter Satz: Dropset",
                     sub: "Cable Shoulder Press / Standing DB Arnold Press",
                     restRec: 180, warmupType: "heavy",
                     primaryMuscle: "Schulter (vordere)", secondaryMuscles: ["Trizeps", "Schulter (mittlere/hintere)"]
@@ -1108,22 +1192,34 @@
                 },
                 {
                     id: "ok2_4",
-                    name: "Heavy Bar Triceps Pressdown (ATX-Kabelzug) o. Dips",
-                    target: "3 Sätze x 8–12 Wdh.",
+                    name: "Paused Dips (Körpergewicht / Fokus Tiefe) o. Bar Pressdown",
+                    target: "3 Sätze x AMRAP (8–12 Wdh.)",
                     earlyRir: "1", lastRir: "0",
-                    cue: "Schweres Trizepsdrücken mit Stange oder Paused Dips | Letzter Satz: Dropset (-25% Gewicht)",
-                    sub: "Paused Dips (Körpergewicht / Fokus Tiefe)",
+                    cue: "3s Negativ + 1s Pause ganz unten im Stretch | Alternativ: Schweres Trizepsdrücken mit Stange am ATX-Kabel",
+                    sub: "Heavy Bar Triceps Pressdown (ATX-Kabelzug)",
                     restRec: 120, warmupType: "light",
-                    primaryMuscle: "Trizeps", secondaryMuscles: ["Brust"]
+                    primaryMuscle: "Brust", secondaryMuscles: ["Trizeps"]
                 },
                 {
                     id: "ok2_5",
-                    name: "Reverse Pec Deck (Butterfly umgestellt) + Cable Y-Raise",
+                    name: "B1: Cross-Body Cable Y-Raise (Tiefes ATX-Kabel)",
                     target: "4 Sätze x 12–15 Wdh.",
                     earlyRir: "1", lastRir: "0",
-                    cue: "An der umgestellten Butterfly-Maschine Arme weit nach außen führen (Integrated Partials) + Cross-Body Cable Y-Raise",
-                    sub: "Rear Delt 45° Cable Flye (einarmig über Kreuz am ATX-Kabel)",
-                    restRec: 90, warmupType: "light",
+                    cue: "Wie beim 'Schwertziehen' von unten quer vor dem Körper schräg hoch/außen ziehen (voller Stretch der seitlichen Schulter!)",
+                    sub: "Kurzhantel-Seitheben / Super-ROM Lateral Raise",
+                    restRec: 45, warmupType: "light",
+                    supersetGroup: "OK2_SS2", supersetRole: "B1", supersetPartner: "Reverse Pec Deck (Butterfly umgestellt)", supersetRest: 45,
+                    primaryMuscle: "Schulter (mittlere/hintere)", secondaryMuscles: []
+                },
+                {
+                    id: "ok2_9",
+                    name: "B2: Reverse Pec Deck (Butterfly-Maschine umgestellt)",
+                    target: "3 Sätze x 12–15 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Arme weit nach außen schwingen (Fokus hintere Schulter) | Integrated Partials: 1 volle + 1 halbe Stretch-Wdh. im Wechsel!",
+                    sub: "Rear Delt 45° Cable Flye (einarmig am ATX-Kabel)",
+                    restRec: 60, warmupType: "light",
+                    supersetGroup: "OK2_SS2", supersetRole: "B2", supersetPartner: "Cross-Body Cable Y-Raise", supersetRest: 60,
                     primaryMuscle: "Schulter (mittlere/hintere)", secondaryMuscles: ["Rücken"]
                 },
                 {
@@ -1131,20 +1227,32 @@
                     name: "Overhead Cable Triceps Extension (Katana / Bar am ATX-Kabel)",
                     target: "3 Sätze x 10–12 Wdh.",
                     earlyRir: "1", lastRir: "0",
-                    cue: "Kabel von unten/Mitte hinter dem Kopf führen | 1s Pause im vollen Stretch des langen Trizepskopfes!",
+                    cue: "Kabel von unten/Mitte hinter dem Kopf führen | 1s Pause im vollen Stretch des langen Trizepskopfes! | Letzter Satz: Dropset",
                     sub: "Slow-Eccentric DB Skull Crusher auf Bank (3-4s Negativ)",
                     restRec: 90, warmupType: "light",
                     primaryMuscle: "Trizeps", secondaryMuscles: []
                 },
                 {
                     id: "ok2_7",
-                    name: "Cable Paused Shrug-In (ATX-Kabel) + Hammer Preacher Curl",
+                    name: "C1: Cable Paused Shrug-In (ATX-Kabelzug)",
                     target: "3 Sätze x 10–12 Wdh.",
                     earlyRir: "1", lastRir: "0",
-                    cue: "Am Kabelzug schräg hoch/innen zu den Ohren ziehen (2s Squeeze!) + Hammer Curl über Schrägbank-Kante für Brachialis",
-                    sub: "DB Shrugs + Inverse Zottman Curls",
-                    restRec: 90, warmupType: "light",
-                    primaryMuscle: "Nacken", secondaryMuscles: ["Bizeps"]
+                    cue: "Am Kabelzug schräg hoch/innen Richtung Ohren ziehen | 2s Squeeze oben + 1s Stretch unten!",
+                    sub: "Langhantel- oder Kurzhantel-Shrugs",
+                    restRec: 45, warmupType: "light",
+                    supersetGroup: "OK2_SS3", supersetRole: "C1", supersetPartner: "Hammer Preacher Curl", supersetRest: 45,
+                    primaryMuscle: "Nacken", secondaryMuscles: []
+                },
+                {
+                    id: "ok2_10",
+                    name: "C2: Hammer Preacher Curl (über Schrägbank-Polster)",
+                    target: "3 Sätze x 10–12 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Trizeps fest auf dem Schrägbank-Polster | Hantel mittig fest zudrücken | Untere 3/4 ROM für konstante Brachialis-Spannung!",
+                    sub: "Inverse DB Zottman Curl / Freie Hammer Curls",
+                    restRec: 60, warmupType: "light",
+                    supersetGroup: "OK2_SS3", supersetRole: "C2", supersetPartner: "Cable Paused Shrug-In", supersetRest: 60,
+                    primaryMuscle: "Bizeps", secondaryMuscles: []
                 }
             ],
             "UK2": [
@@ -1170,13 +1278,25 @@
                 },
                 {
                     id: "uk2_3",
-                    name: "DB Bulgarian Split Squats o. Reverse Lunges (+ Cable Adduction)",
+                    name: "A1: DB Bulgarian Split Squats o. Reverse Lunges",
                     target: "3 Sätze x 8–12 Wdh.",
                     earlyRir: "1-2", lastRir: "1",
-                    cue: "Oberkörper leicht vorlehnen für maximalen Gluteus- & Quad-Stretch | Optional: Cable Hip Adduction am Fußgelenk",
-                    sub: "Copenhagen Hip Adduction + Goblet Squats",
-                    restRec: 150, warmupType: "heavy",
+                    cue: "Oberkörper leicht vorlehnen für maximalen Gluteus- & Quad-Stretch | Vorderes Bein übernimmt 95% der Arbeit",
+                    sub: "Barbell Lunges / Step-Ups",
+                    restRec: 45, warmupType: "heavy",
+                    supersetGroup: "UK2_SS1", supersetRole: "A1", supersetPartner: "Cable Hip Adduction / Sissy Squat", supersetRest: 45,
                     primaryMuscle: "Gluteus", secondaryMuscles: ["Quadriceps"]
+                },
+                {
+                    id: "uk2_5",
+                    name: "A2: Cable Hip Adduction (ATX-Kabel) o. Sissy Squat",
+                    target: "3 Sätze x 10–12 Wdh.",
+                    earlyRir: "1", lastRir: "0",
+                    cue: "Fußschlaufe am tiefen Kabelzug: Bein kontrolliert vor dem Standbein nach innen ziehen (Adduktoren) oder Sissy Squat am Rack",
+                    sub: "Copenhagen Hip Adduction an der Bank",
+                    restRec: 60, warmupType: "light",
+                    supersetGroup: "UK2_SS1", supersetRole: "A2", supersetPartner: "DB Bulgarian Split Squats", supersetRest: 60,
+                    primaryMuscle: "Quadriceps", secondaryMuscles: ["Gluteus"]
                 },
                 {
                     id: "uk2_4",
@@ -1251,14 +1371,13 @@
             if (!historyObj._specConfig) {
                 historyObj._specConfig = {
                     enabled: false,
-                    mode: "cap", // "cap" (+30% Fokus, -25% Rest), "under" (+30% Fokus, 100% Rest), "recover" (100% Fokus, -25% Rest)
+                    mode: "cap",
                     muscles: ["Schulter (mittlere/hintere)", "Rücken"]
                 };
             }
             return historyObj._specConfig;
         }
 
-        // Berechnet die dynamische Satzanzahl einer Übung basierend auf dem Spezialisierungs-Schalter
         function getEffectiveSetsForExercise(ex) {
             const baseSets = parseInt(ex.target.charAt(0)) || 3;
             const cfg = getSpecConfig();
@@ -1268,13 +1387,11 @@
             const isPriority = cfg.muscles.includes(ex.primaryMuscle);
             if (isPriority) {
                 if (cfg.mode === "cap" || cfg.mode === "under") {
-                    // +25 bis 35% Volumen für Prioritäten (Trainingspedia Pro S. 34/38)
                     return { sets: Math.round(baseSets * 1.33), status: "priority" };
                 }
                 return { sets: baseSets, status: "priority" };
             } else {
                 if (cfg.mode === "cap" || cfg.mode === "recover") {
-                    // -25 bis 35% Volumen für Nicht-Fokus-Muskeln (Systemic MRV Schutz)
                     return { sets: Math.max(2, Math.round(baseSets * 0.72)), status: "reduced" };
                 }
                 return { sets: baseSets, status: "normal" };
@@ -1318,7 +1435,7 @@
                 const largeCount = cfg.muscles.filter(m => volumeLandmarks[m] && volumeLandmarks[m].isLarge).length;
                 const guideHint = (largeCount >= 2 && cfg.muscles.length > 2)
                     ? `<div style="color:var(--warning); margin-top:4px;">⚠️ <b>Trainingspedia-Hinweis (S. 32):</b> Bei großen Muskelgruppen (Brust, Rücken, Beine) mit Grundübungen maximal 2 Muskeln gleichzeitig priorisieren!</div>`
-                    : `<div style="color:var(--accent); margin-top:4px;">✅ <b>Perfektes Setup:</b> Fokus-Übungen stehen im Workout automatisch an Position 1 (höchste ZNS-Frische) und erhalten +30% Sätze.</div>`;
+                    : `<div style="color:var(--accent); margin-top:4px;">✅ <b>Perfektes Setup:</b> Fokus-Übungen (inkl. kompletter Supersatz-Paare) stehen im Workout automatisch an Position 1 und erhalten +30% Sätze.</div>`;
 
                 summaryBox.innerHTML = `
                     <div><b>Aktive Prioritäten:</b> ${cfg.muscles.join(', ')}</div>
@@ -1793,6 +1910,35 @@
             showToast("📉 Deload-Modus geladen: 50% Sätze bei gewohntem Gewicht & RIR 4!");
         };
 
+        // Gruppiert Einzel-Übungen und Supersatz-Paare so, dass Supersatz-Partner (A1+A2) bei Spezialisierungs-Sortierung immer zusammenbleiben
+        function getSortedWorkoutBlocks(exList) {
+            const cfg = getSpecConfig();
+            let blocks = [];
+            let handledGroups = new Set();
+
+            exList.forEach(ex => {
+                if (ex.supersetGroup) {
+                    if (!handledGroups.has(ex.supersetGroup)) {
+                        handledGroups.add(ex.supersetGroup);
+                        const groupItems = exList.filter(item => item.supersetGroup === ex.supersetGroup);
+                        const isPrio = cfg.enabled && groupItems.some(item => cfg.muscles.includes(item.primaryMuscle));
+                        blocks.push({ isPrio: isPrio ? 1 : 0, items: groupItems });
+                    }
+                } else {
+                    const isPrio = cfg.enabled && cfg.muscles.includes(ex.primaryMuscle);
+                    blocks.push({ isPrio: isPrio ? 1 : 0, items: [ex] });
+                }
+            });
+
+            if (cfg.enabled) {
+                blocks.sort((a, b) => b.isPrio - a.isPrio);
+            }
+
+            let flatList = [];
+            blocks.forEach(b => flatList.push(...b.items));
+            return flatList;
+        }
+
         function renderWorkout() {
             const selectedPlan = workoutSelector.value;
             const container = document.getElementById('workout-container');
@@ -1807,14 +1953,7 @@
             toolbar.style.display = 'block';
             window.updateLiftSrpePreview();
 
-            // Wenn Spezialisierung aktiv ist: Sortiere Fokus-Übungen nach ganz oben (Trainingspedia Pro S. 35: Übungsreihenfolge!)
-            const cfg = getSpecConfig();
-            const sortedExercises = [...plans[selectedPlan]].sort((a, b) => {
-                if (!cfg.enabled) return 0;
-                const aPrio = cfg.muscles.includes(a.primaryMuscle) ? 1 : 0;
-                const bPrio = cfg.muscles.includes(b.primaryMuscle) ? 1 : 0;
-                return bPrio - aPrio;
-            });
+            const sortedExercises = getSortedWorkoutBlocks(plans[selectedPlan]);
 
             sortedExercises.forEach(ex => {
                 const { sets, status } = getEffectiveSetsForExercise(ex);
@@ -1853,8 +1992,55 @@
                     specBadgeHtml = `<span class="bio-tag maint-tag">🛡️ Systemic-MRV Schutz (${sets} statt ${baseSets} Sätze)</span>`;
                 }
 
+                // Supersatz-Logik & Klassen (A1/B1/C1 = 1. Übung des Paares | A2/B2/C2 = 2. Übung des Paares)
+                const isSupersetFirst = ex.supersetRole && ex.supersetRole.endsWith("1");
+                const isSupersetSecond = ex.supersetRole && ex.supersetRole.endsWith("2");
+                const ssClass = isSupersetFirst ? "superset-card-a1" : (isSupersetSecond ? "superset-card-a2" : "");
+
+                let supersetTopPill = "";
+                let supersetRestHintHtml = "";
+                let timerButtonsHtml = "";
+
+                if (ex.supersetGroup) {
+                    const roleCode = ex.supersetRole;
+                    const nextPartner = ex.supersetPartner;
+                    supersetTopPill = `<div class="superset-pill">🔗 SUPERSATZ ${roleCode} (Paar mit: ${nextPartner})</div>`;
+
+                    if (isSupersetFirst) {
+                        supersetRestHintHtml = `
+                            <div class="superset-rest-hint">
+                                ⚡ <b>Supersatz-Ablauf (${roleCode} ➔ ${roleCode[0]}2):</b> Mache nach diesem Satz nur <b>${ex.supersetRest || 45} Sek. kurze Übergangspause</b> (bis der Atem ruhig ist) und wechsle direkt zur Karte darunter (<b>${nextPartner}</b>)!
+                            </div>
+                        `;
+                    } else {
+                        supersetRestHintHtml = `
+                            <div class="superset-rest-hint">
+                                🔄 <b>Supersatz-Runde abschließen (${roleCode} ➔ ${roleCode[0]}1):</b> Nach diesem Satz <b>${ex.supersetRest || 60}–90 Sek. pausieren</b> und dann wieder oben bei <b>${nextPartner}</b> mit dem nächsten Satz starten!
+                            </div>
+                        `;
+                    }
+
+                    timerButtonsHtml = `
+                        <div class="timer-btns">
+                            <button type="button" class="timer-btn superset-timer" onclick="window.startTimer(45)">🔗 45s Wechsel</button>
+                            <button type="button" class="timer-btn superset-timer" onclick="window.startTimer(60)">🔗 60s Wechsel</button>
+                            <button type="button" class="timer-btn" onclick="window.startTimer(90)">⏱ 90s Runde</button>
+                            <button type="button" class="timer-btn" onclick="window.startTimer(30)">🩸 30s BFR</button>
+                        </div>
+                    `;
+                } else {
+                    timerButtonsHtml = `
+                        <div class="timer-btns">
+                            <button type="button" class="timer-btn" onclick="window.startTimer(30)">🩸 30s BFR</button>
+                            <button type="button" class="timer-btn" onclick="window.startTimer(90)">⏱ 90s Iso</button>
+                            <button type="button" class="timer-btn" onclick="window.startTimer(${ex.restRec || 180})">⏱ ${ex.restRec || 180}s Optimal</button>
+                        </div>
+                    `;
+                }
+
                 let cardHTML = `
-                    <div id="card_${ex.id}" class="exercise-card ${status === 'priority' ? 'spec-priority' : (status === 'reduced' ? 'spec-reduced' : '')}">
+                    <div id="card_${ex.id}" class="exercise-card ${ssClass} ${status === 'priority' ? 'spec-priority' : (status === 'reduced' ? 'spec-reduced' : '')}">
+                        ${supersetTopPill}
                         <div class="ex-top-bar">
                             <div class="exercise-title">${ex.name}</div>
                             <div class="ex-tools">
@@ -1870,6 +2056,8 @@
                             <span class="bio-tag intens">🔄 Alt: ${ex.sub}</span>
                         </div>
 
+                        ${supersetRestHintHtml}
+
                         <div style="font-size:12.5px; color:var(--accent); margin-bottom:4px; font-weight:700;">${historyText}</div>
                         ${lastSetsInline ? `<div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">Letzte Serie: ${lastSetsInline}</div>` : ''}
                         ${progSuggestion ? `<div style="font-size:11.5px; color:var(--warning); margin-bottom:8px;">${progSuggestion}</div>` : ''}
@@ -1881,11 +2069,7 @@
 
                         <textarea id="${ex.id}_note" class="ex-note" placeholder="Setup / Notizen (z.B. ATX-Kabel Pin 8, Schrägbank 30°, Griff)...">${latestNote}</textarea>
 
-                        <div class="timer-btns">
-                            <button type="button" class="timer-btn" onclick="window.startTimer(30)">🩸 30s BFR</button>
-                            <button type="button" class="timer-btn" onclick="window.startTimer(90)">⏱ 90s Iso</button>
-                            <button type="button" class="timer-btn" onclick="window.startTimer(${ex.restRec || 180})">⏱ ${ex.restRec || 180}s Optimal</button>
-                        </div>
+                        ${timerButtonsHtml}
                 `;
 
                 for(let i = 1; i <= sets; i++) {
@@ -1900,6 +2084,17 @@
                         </div>`;
                 }
                 cardHTML += `</div>`;
+
+                // Visuelle Supersatz-Verbindungsbrücke zwischen A1 und A2
+                if (isSupersetFirst) {
+                    cardHTML += `
+                        <div class="superset-connector">
+                            <span>🔗 SUPERSATZ-WECHSEL (${ex.supersetRole} ➔ ${ex.supersetRole[0]}2)</span>
+                            <span>⏱ Nur 30–60s Pause vor ${ex.supersetPartner}!</span>
+                        </div>
+                    `;
+                }
+
                 container.innerHTML += cardHTML;
             });
         }
